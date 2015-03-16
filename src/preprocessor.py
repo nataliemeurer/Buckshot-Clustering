@@ -14,6 +14,7 @@ class dataBin:
 		self.continuousVariables = data['continuousVariables']
 		self.categoricalVariables = data['categoricalVariables']
 		self.relation = data['relation']
+		self.classIdx = data['classIdx']
 	
 	# return the primary data
 	def getData(self):
@@ -31,17 +32,28 @@ class dataBin:
 					self.fillMissingCategoricalValues(attr[0])
 				print "Filled missing values for " + attr[0]
 
-	def minMaxNormalize(attrName, min=0, max=1):
+	def minMaxNormalize(attrName, minimum=0, maximum=1):
 		if attrName in self.continuousVariables:
 			attrIdx = None
 			oldMin = self.continuousVariables[attrName].getMin();
 			oldMax = self.continuousVariables[attrName].getMax();
+			newBin = util.continuousBin(attrName)
 			for idx, attr in self.attributes:
 				if attr[0] == attrName:
 					attrIdx = idx
 			# for every value of that attribute...
 			for idx, entry in self.data:
-
+				# Recalculate min max on a scale for the minimum and maximum
+				newVal = util.scaleMinMax(entry[attrName], oldMin, oldMax, minimum, maximum)
+				# Add the value to the new bin
+				newBin.add(newVal, entry[self.classIdx])
+				self.data[idx][attrName] = newVal
+				newKey = attrName + " " + newVal
+				if newKey in self.lookup:
+					self.lookup[newKey].append(idx)
+				else:
+					self.lookup[newKey] = [idx]
+			self.continuousVariables[attrName] = newBin
 
 
 	# fills missing values for a single categorical classifier

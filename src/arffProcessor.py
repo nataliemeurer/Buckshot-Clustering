@@ -79,6 +79,7 @@ def readArff(fileSrc):
 			rawData.append(newDataEntry)					# append data entry to all of our data
 	# END OF FOR LOOP
 	results = {}
+	results['classIdx'] = classIdx
 	results['data'] = rawData
 	results['attributes'] = attributes
 	results['relation'] = relation
