@@ -31,6 +31,19 @@ class dataBin:
 					self.fillMissingCategoricalValues(attr[0])
 				print "Filled missing values for " + attr[0]
 
+	def minMaxNormalize(attrName, min=0, max=1):
+		if attrName in self.continuousVariables:
+			attrIdx = None
+			oldMin = self.continuousVariables[attrName].getMin();
+			oldMax = self.continuousVariables[attrName].getMax();
+			for idx, attr in self.attributes:
+				if attr[0] == attrName:
+					attrIdx = idx
+			# for every value of that attribute...
+			for idx, entry in self.data:
+
+
+
 	# fills missing values for a single categorical classifier
 	def fillMissingCategoricalValues(self, attrName):
 		if attrName in self.categoricalVariables:

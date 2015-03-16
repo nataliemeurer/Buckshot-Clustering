@@ -3,6 +3,7 @@ import bisect
 import time, sys
 import numpy as np
 import math
+import settings as ENV
 
 # Class used to manage sorted sets of a continuous variable
 class continuousBin:
@@ -12,7 +13,7 @@ class continuousBin:
 		self.mean = None
 		self.classMean = {}
 
-	def add(self, val, className='<=50K'):
+	def add(self, val, className=ENV.CLASSIFIER_NAME):
 		if val == "?":
 			return
 		if self.mean != None and isNumber(val):	
