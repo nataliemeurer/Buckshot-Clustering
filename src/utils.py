@@ -12,6 +12,8 @@ class continuousBin:
 		self.attrName = attrName
 		self.mean = None
 		self.classMean = {}
+		self.max = None
+		self.min = None
 
 	def add(self, val, className=ENV.CLASSIFIER_NAME):
 		if val == "?":
@@ -23,9 +25,15 @@ class continuousBin:
 				self.classMean[className][1] += 1
 			else:
 				self.classMean[className] = [ val, 1 ]
+			if val < self.min:
+				self.min = val
+			if val > self.max:
+				self.max = val
 			bisect.insort(self.values, val)
 		else:
 			self.mean = val
+			self.min = val
+			self.max = val
 			self.classMean[className] = [ val, 1 ]
 			self.values.append(val)
 
@@ -34,6 +42,12 @@ class continuousBin:
 
 	def getMean(self):
 		return self.mean
+
+	def getMin(self):
+		return self.min
+
+	def getMax(self):
+		return self.max
 
 	def getClassMean(self, className):
 		if className in self.classMean:
