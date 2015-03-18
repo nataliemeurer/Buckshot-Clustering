@@ -3,6 +3,7 @@ import numpy as np
 import settings
 import bisect
 import Queue as qu
+import Entry as e
 
 # dataBin class manages and preprocesses all of our data
 class dataBin:
@@ -130,3 +131,13 @@ class dataBin:
 				print "No missing values for " + attrName
 		else:
 			print "No attribute found for " + attrName
+
+	def getDataAsEntries(self):
+		entries = []
+		# converting data to proper format
+		for item in self.data:
+			# make a new entry
+			entry = new e.Entry(item)
+			# add the entry
+			entries.append(entry)
+		return entries
