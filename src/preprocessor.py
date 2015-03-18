@@ -15,6 +15,7 @@ class dataBin:
 		self.categoricalVariables = data['categoricalVariables']
 		self.relation = data['relation']
 		self.classIdx = data['classIdx']
+		self.dataLength = float(len(self.data))
 	
 	# return the primary data
 	def getData(self):

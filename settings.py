@@ -17,5 +17,8 @@ NORMALIZATION_METHOD = "z-score"
 NORMALIZED_MIN = 0
 NORMALIZED_MAX = 1
 
+# Clustering Methods
+K = 5
+
 # Validator Preferences
 NUM_OF_FOLDS = 10
