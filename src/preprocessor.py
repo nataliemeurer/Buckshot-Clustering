@@ -20,21 +20,30 @@ class dataBin:
 	def getData(self):
 		return self.data
 
-	# fills all missing values using the mean or mode of the class
-	def fillAllMissingValues(self):
+	# fills missing values using the mean or mode of the class and normalizes continuous variables
+	def fillMissingValues(self):
 		print "Filling all missing values with mean(continuous) or mode(categorical)"
 		# for each attribute
 		for attr in self.attributes:
 			if attr[0] + " ?" in self.lookup:	# If we have undefined variables
 				if attr[1] == 'real':
+					# Fill missing continuous values
 					self.fillMissingContinuousValues(attr[0])
 				else:
 					self.fillMissingCategoricalValues(attr[0])
 				print "Filled missing values for " + attr[0]
 
+	def normalizeContinuousVariables(self, method=settings.NORMALIZATION_METHOD, minimum=settings.NORMALIZED_MIN, maximum=settings.NORMALIZED_MAX):
+		for attr in self.attributes:
+			if attr[1] == 'real':
+				# Fill missing continuous values
+				self.normalizeAttribute(attr[0], minimum, maximum, method)
+
 	# normalizes the attribute
 	def normalizeAttribute(self, attrName, minimum=0, maximum=1, method=settings.NORMALIZATION_METHOD):
 		if attrName in self.continuousVariables:
+			print "\nNormalizing values for " + attrName + " using the " + method + " method:"
+			util.updateProgress(0)
 			attrIdx = None
 			oldMin = self.continuousVariables[attrName].getMin();
 			oldMax = self.continuousVariables[attrName].getMax();
@@ -46,6 +55,7 @@ class dataBin:
 					attrIdx = idx
 			# for every value of that attribute...
 			for idx, entry in enumerate(self.data):
+				util.updateProgress(float(idx) / float(len(self.data)))
 				# Recalculate min max on a scale for the minimum and maximum
 				if method == "min-max":
 					newVal = util.scaleMinMax(entry[attrName], oldMin, oldMax, minimum, maximum)
@@ -64,8 +74,8 @@ class dataBin:
 				else:
 					self.lookup[newKey] = [idx]
 			# overwrite our old continuous bin with our new continuous bin
+			util.updateProgress(1)
 			self.continuousVariables[attrName] = newBin
-			print self.data[432][attrName]
 		else:
 			print "notfound"
 			return None

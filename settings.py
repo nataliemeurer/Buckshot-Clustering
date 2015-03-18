@@ -14,6 +14,8 @@ CLASSIFIER_NAME = "native-country:"
 
 # normalization method--serves as default in the normalize attribute function. Possible values: "z-score", "min-max"
 NORMALIZATION_METHOD = "z-score"
+NORMALIZED_MIN = 0
+NORMALIZED_MAX = 1
 
 # Validator Preferences
 NUM_OF_FOLDS = 10
