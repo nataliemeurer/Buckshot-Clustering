@@ -12,6 +12,8 @@ FILL_WITH_CLASS_MODE = True
 # Naive Bayes Preferences
 CLASSIFIER_NAME = "native-country:"
 
+# normalization method--serves as default in the normalize attribute function. Possible values: "z-score", "min-max"
+NORMALIZATION_METHOD = "z-score"
 
 # Validator Preferences
 NUM_OF_FOLDS = 10

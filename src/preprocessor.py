@@ -32,29 +32,43 @@ class dataBin:
 					self.fillMissingCategoricalValues(attr[0])
 				print "Filled missing values for " + attr[0]
 
-	def minMaxNormalize(attrName, minimum=0, maximum=1):
+	# normalizes the attribute
+	def normalizeAttribute(self, attrName, minimum=0, maximum=1, method=settings.NORMALIZATION_METHOD):
 		if attrName in self.continuousVariables:
 			attrIdx = None
 			oldMin = self.continuousVariables[attrName].getMin();
 			oldMax = self.continuousVariables[attrName].getMax();
+			if method == "z-score":
+				stdev = np.std(self.continuousVariables[attrName].getValues());
 			newBin = util.continuousBin(attrName)
 			for idx, attr in self.attributes:
 				if attr[0] == attrName:
 					attrIdx = idx
 			# for every value of that attribute...
-			for idx, entry in self.data:
+			for idx, entry in enumerate(self.data):
 				# Recalculate min max on a scale for the minimum and maximum
-				newVal = util.scaleMinMax(entry[attrName], oldMin, oldMax, minimum, maximum)
+				if method == "min-max":
+					newVal = util.scaleMinMax(entry[attrName], oldMin, oldMax, minimum, maximum)
+				elif method == "z-score":
+					newVal = util.scaleZScore(entry[attrName], self.continuousVariables[attrName].getMean(), stdev)
+				else:
+					return None
 				# Add the value to the new bin
-				newBin.add(newVal, entry[self.classIdx])
+				newBin.add(newVal, self.attributes[self.classIdx][0])
+				# Add the value to the data
 				self.data[idx][attrName] = newVal
-				newKey = attrName + " " + newVal
+				newKey = str(attrName) + " " + str(newVal)
+				# Add the value to our reverse lookup
 				if newKey in self.lookup:
 					self.lookup[newKey].append(idx)
 				else:
 					self.lookup[newKey] = [idx]
+			# overwrite our old continuous bin with our new continuous bin
 			self.continuousVariables[attrName] = newBin
-
+			print self.data[432][attrName]
+		else:
+			print "notfound"
+			return None
 
 	# fills missing values for a single categorical classifier
 	def fillMissingCategoricalValues(self, attrName):

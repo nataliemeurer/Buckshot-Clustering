@@ -11,3 +11,5 @@ data = arff.readArff(ENV.DATA_SRC)
 # create a processing bin to manipulate our data
 fullData = processor.dataBin(data)
 fullData.fillAllMissingValues()	# fill all missing values
+fullData.normalizeAttribute('age')
+fullData.normalizeAttribute('education-num:')

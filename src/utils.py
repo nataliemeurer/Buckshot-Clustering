@@ -8,6 +8,9 @@ import settings as ENV
 def scaleMinMax(value, oldMin, oldMax, minimum=0, maximum=1):
 	return ((value - oldMin)/(oldMax - oldMin))*(maximum - minimum) + minimum
 
+def scaleZScore(value, mean, stdev):
+	return (value - mean) / stdev
+
 # Class used to manage sorted sets of a continuous variable
 class continuousBin:
 	def __init__(self, attrName):
@@ -100,13 +103,6 @@ class categoricalBin:
 	def getClassMode(self, className):
 		return self.classModes[str(className)][1]
 
-
-def gaussianDensity(val, mean, stdev):
-	try:
-		density = ((1 / np.sqrt(2.0 * 3.14159 * stdev))) * np.exp(np.power(val - mean, 2) / (2 * np.power(stdev, 2)))
-		return density
-	except OverflowError:
-		return .1
 
 # Returns whether the string can be converted to a number
 def isNumber(str):
