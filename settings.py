@@ -1,24 +1,24 @@
 # USED TO STORE GLOBAL / ENVIRONMENTAL VARIABLES
 
-# General Settings
-PROGRESS_BAR = True 							# set whether a progress bar is used to show output.  Should be turned off when writing to files
+# GENERAL SETTINGS
+PROGRESS_BAR = True 				# set whether a progress bar is used to show output.  Should be turned off when writing to files
 
-# File src, relative to main
+
+# DATA SETTINGS
 DATA_SRC = './data/adult-big.arff'
 
-# Preprocessor Preferences
-FILL_WITH_CLASS_MODE = True
 
-# Naive Bayes Preferences
-CLASSIFIER_NAME = "native-country:"
+# PREPROCESSOR SETTINGS
+FILL_WITH_CLASS_MODE = True 		# Determines whether the program fills missing values with the class mode or the overall mode
+CLASSIFIER_NAME = "native-country:" # Name of presumed classifier
+NORMALIZATION_METHOD = "min-max"	# normalization method--serves as default in the normalize attribute function. Possible values: "z-score", "min-max"
+NORMALIZED_MIN = 0					# minimum value used for min-max normalization
+NORMALIZED_MAX = 1  				# maximum value used for min-max normalization
 
-# normalization method--serves as default in the normalize attribute function. Possible values: "z-score", "min-max"
-NORMALIZATION_METHOD = "z-score"
-NORMALIZED_MIN = 0
-NORMALIZED_MAX = 1
 
-# Clustering Methods
-K = 5
+# CLUSTERING SETTINGS
+K = 5								# number of clusters
+DISTANCE_MEASURE = "euclidian"		# formula used to measure distance, currently only supports euclidian
 
-# Validator Preferences
+# VALIDATOR SETTINGS
 NUM_OF_FOLDS = 10

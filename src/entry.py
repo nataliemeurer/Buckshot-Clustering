@@ -1,13 +1,13 @@
 import utils as util
 import numpy as np
 
-class entry:
+class Entry:
 	# Constructor: copy values over
 	def __init__(self, values):
 		self.values = values.copy();
 
 	# get values
-	def getValues():
+	def getValues(self):
 		return self.values
 
 	# calculateEuclidian Distance
@@ -20,7 +20,8 @@ class entry:
 				# calculate the square of the values
 				sumOfSquares += np.power(self.values[key] - entry2.getValues()[key], 2)
 			else:
-				if self.values[key] == entry.getValues()[key]:
+				# return 0 if it is the same categorical variable
+				if self.values[key] == entry2.getValues()[key]:
 					sumOfSquares += 0
 				else:
 					sumOfSquares += 1

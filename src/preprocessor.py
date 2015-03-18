@@ -3,7 +3,7 @@ import numpy as np
 import settings
 import bisect
 import Queue as qu
-import Entry as e
+import entry as e
 
 # dataBin class manages and preprocesses all of our data
 class dataBin:
@@ -44,7 +44,7 @@ class dataBin:
 	# normalizes the attribute
 	def normalizeAttribute(self, attrName, minimum=0, maximum=1, method=settings.NORMALIZATION_METHOD):
 		if attrName in self.continuousVariables:
-			print "\nNormalizing values for " + attrName + " using the " + method + " method:"
+			print "\n\nNormalizing values for " + attrName + " using the " + method + " method:"
 			util.updateProgress(0)
 			attrIdx = None
 			oldMin = self.continuousVariables[attrName].getMin();
@@ -132,12 +132,18 @@ class dataBin:
 		else:
 			print "No attribute found for " + attrName
 
+	# Returns the data points as entry objects
 	def getDataAsEntries(self):
 		entries = []
+		print "\n\nConverting Data to entries"
+		util.updateProgress(0)
 		# converting data to proper format
-		for item in self.data:
+		for idx, item in enumerate(self.data):
+			util.updateProgress(float(idx)/ float(len(self.data)))
 			# make a new entry
-			entry = new e.Entry(item)
+			entry = e.Entry(item)
 			# add the entry
 			entries.append(entry)
+		util.updateProgress(1)
+		print "\n"
 		return entries
