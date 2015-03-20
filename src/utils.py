@@ -3,6 +3,7 @@ import bisect
 import time, sys
 import numpy as np
 import math
+import random
 import settings as ENV
 
 def scaleMinMax(value, oldMin, oldMax, minimum=0, maximum=1):
@@ -10,6 +11,11 @@ def scaleMinMax(value, oldMin, oldMax, minimum=0, maximum=1):
 
 def scaleZScore(value, mean, stdev):
 	return (value - mean) / stdev
+
+def chooseOneWithoutReplacement(list):
+	randIdx = math.floor(len(list) * random.random())
+	removedVal = list.remove(randIdx)
+	return removedVal
 
 # Class used to manage sorted sets of a continuous variable
 class continuousBin:

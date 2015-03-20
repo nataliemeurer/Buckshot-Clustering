@@ -14,6 +14,3 @@ fullData = processor.dataBin(data)
 fullData.fillMissingValues()	# fill all missing values
 fullData.normalizeContinuousVariables()
 entries = fullData.getDataAsEntries()
-cluster = c.Cluster(entries[10], entries)
-# fullData.normalizeAttribute('age')
-# fullData.normalizeAttribute('education-num:')
