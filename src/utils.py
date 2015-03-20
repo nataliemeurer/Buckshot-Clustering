@@ -17,6 +17,11 @@ def chooseOneWithoutReplacement(list):
 	removedVal = list.pop(randIdx)
 	return removedVal
 
+def chooseOneWithReplacement(list):
+	randIdx = math.floor(len(list) * random.random())
+	val = list[randIdx:randIdx + 1]
+	return val
+
 # Class used to manage sorted sets of a continuous variable
 class continuousBin:
 	def __init__(self, attrName):

@@ -4,11 +4,11 @@ import numpy as np
 import utils as util
 
 # Main clustering class
-class buckshotClusters:
+class BuckshotClusters:
 	# Constructor
 	def __init__(self):
 		self.resultsLog = []
 
 	# Main clustering function
-	def clusterData(self, entries):
+	def clusterEntries(self, entries):
 
