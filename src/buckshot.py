@@ -21,18 +21,32 @@ class BuckshotClusters:
 			iterator += 1
 			entry = util.chooseOneWithoutReplacement(entries)
 			clusters.append( c.Cluster(entry, [e.Entry( entry.getValues().copy() )] ) )
-		# while len(clusters) > ENV.K:
-		matrix = self.createComparisonMatrix(clusters)
+		while len(clusters) > ENV.K:
+			# calculate a comparison matrix
+			matrixInfo = self.createSimilarityMatrix(clusters)
+			minimumDistance = matrixInfo[1]
+			# Regardless of our method, we care most about our minimum distance clusters.  We merge those using the indices provided by the similarity matrix function
+			newCluster = c.mergeClusters(clusters[minimumDistance[1]], clusters[minimumDistance[2]])
+			# pop the larger index first
+			if minimumDistance[1] > minimumDistance[2]:
+				clusters.pop(minimumDistance[1]).printClusterData()
+				clusters.pop(minimumDistance[2]).printClusterData()
+			else:
+				clusters.pop(minimumDistance[2])
+				clusters.pop(minimumDistance[1])
+			# add the new cluster to our list of clusters
+			clusters.append(newCluster)
+			print len(clusters)
 
 
-
+	# Creates a similarity matrix.  Tracks the minimum and maximum values in the matrix. Returns in format[matrix, [minValue, idx1, idx2], [maxValue, idx1, idx2]]
 	def createSimilarityMatrix(self, clusters):
-		print "\nConstructing Similarity Matrix for " + str(len(clusters)) + "clusters using the " + ENV.MERGING_CRITERIA + " merging criteria."
+		print "Constructing Similarity Matrix for " + str(len(clusters)) + " clusters using the " + ENV.MERGING_CRITERIA + " merging criteria."
 		# Create a matrix full of None values of size equal to the length of clusters
 		matrix = []
 		count1 = 0
-		minSimilarityVal = None
-		maxSimilarityVal = None
+		minSimilarity = None
+		maxSimilarity = None
 		# Initialize matrix with all none values
 		while count1 < len(clusters):
 			count2 = 0
@@ -41,27 +55,35 @@ class BuckshotClusters:
 				matrix[count1].append(None)
 				count2 += 1
 			count1 += 1
+		util.updateProgress(0)
 		# for every single row
 		for rowIdx, row in enumerate(matrix):
+			util.updateProgress(float(rowIdx) / float(len(matrix)))
 			# for each column
 			for colIdx, col in enumerate(matrix):
 				# we leave the value as None if 
 				if rowIdx == colIdx:
 					continue
 				else:
+					distance = None
 					if ENV.MERGING_CRITERIA == "single-link":
 						distance = clusters[rowIdx].singleLinkDist(clusters[colIdx])
-						if minSimilarityVal == None:
-							minSimilarityVal = [distance, rowIdx, colIdx]
-							maxSimilarityVal = [distance, rowIdx, colIdx]
-						if distance < minSimilarityVal:
-							minSimilarityVal[0] = distance
-							minSimilarityVal[1] = rowIdx
-							minSimilarityVal[2] = colIdx
-						if distance > maxSimilarityVal:
-							maxSimilarityVal[0] = distance
-							maxSimilarityVal[1] = rowIdx
-							maxSimilarityVal[2] = colIdx
-						matrix[rowIdx][colIdx] = distance
+					elif ENV.MERGING_CRITERIA == "complete-link":
+						distance = clusters[rowIdx].completeLinkDist(clusters[colIdx])
+					if minSimilarity == None:
+						minSimilarity = [distance, rowIdx, colIdx]
+						maxSimilarity = [distance, rowIdx, colIdx]
+					if distance < minSimilarity[0]:
+						minSimilarity[0] = distance
+						minSimilarity[1] = rowIdx
+						minSimilarity[2] = colIdx
+					if distance > maxSimilarity[0]:
+						maxSimilarity[0] = distance
+						maxSimilarity[1] = rowIdx
+						maxSimilarity[2] = colIdx
+					matrix[rowIdx][colIdx] = distance
+		util.updateProgress(1)
+		print "\nMatrix construction complete.\n"
+		return [matrix, minSimilarity, maxSimilarity]
 
 		
