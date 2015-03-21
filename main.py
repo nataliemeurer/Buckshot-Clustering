@@ -6,7 +6,8 @@ import preprocessor as processor
 import settings as ENV
 import utils as util
 import cluster as c
-import buckshot as bs
+import buckshot as buck
+
 
 # FILE READING
 data = arff.readArff(ENV.DATA_SRC)			# read our file and store the data
@@ -18,5 +19,5 @@ fullData.normalizeContinuousVariables()		# Normalize all continuous variables us
 entries = fullData.getDataAsEntries()		# convert all data points to the structure of an entry, a class I defined
 
 # CLUSTERING
-clusterDriver = bs.BuckshotClusters()		# create a cluster driver to do our clustering
-clusterDriver.clusterEntries(entries)		
+clusterDriver = buck.BuckshotClusters()		# create a cluster driver to do our clustering
+clusterDriver.clusterEntries(entries)		# pass our data into the cluster to be buckshot clustered	
