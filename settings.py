@@ -14,6 +14,7 @@ CLASSIFIER_NAME = "class" 				# Name of presumed classifier
 NORMALIZATION_METHOD = "min-max"		# normalization method--serves as default in the normalize attribute function. Possible values: "z-score", "min-max"
 NORMALIZED_MIN = 0						# minimum value used for min-max normalization
 NORMALIZED_MAX = 1  					# maximum value used for min-max normalization
+REMOVED_ATTRS = ["fnlwgt:", "education-num:"]
 
 
 # CLUSTERING SETTINGS

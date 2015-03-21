@@ -42,7 +42,7 @@ class BuckshotClusters:
 
 
 	def assignEntryToNearestCluster(self, entry, clusters):
-		print "assigned"
+		return 1
 
 	# Creates a similarity matrix.  Tracks the minimum and maximum values in the matrix. Returns in format[matrix, [minValue, idx1, idx2], [maxValue, idx1, idx2]]
 	def createSimilarityMatrix(self, clusters):

@@ -41,6 +41,34 @@ class dataBin:
 				# Fill missing continuous values
 				self.normalizeAttribute(attr[0], minimum, maximum, method)
 
+	def removeAttribute(self, attrName):
+		print "\nRemoving all " + attrName + " attributes"
+		# Remove from main data
+		for entry in self.data:
+			entry.pop(attrName)
+		# Remove from reverse lookup
+		lookupKeys = []
+		for key in self.lookup:
+			if attrName in key:
+				lookupKeys.append(key)
+		for item in lookupKeys:
+			self.lookup.pop(item)
+		# Remove from continuous variable
+		contVarKeys = []
+		for key in self.continuousVariables:
+			if attrName in key:
+				contVarKeys.append(key)
+		for item in contVarKeys:
+			self.continuousVariables.pop(item)
+		# Remove from attributes
+		for idx, value in enumerate(self.attributes):
+			print value[0]
+			if value[0] == attrName:
+				self.attributes.pop(idx)
+		for idx, value in enumerate(self.attributes):
+			if value[0] == settings.CLASSIFIER_NAME:
+				self.classIdx = idx
+
 	# normalizes the attribute
 	def normalizeAttribute(self, attrName, minimum=0, maximum=1, method=settings.NORMALIZATION_METHOD):
 		if attrName in self.continuousVariables:
