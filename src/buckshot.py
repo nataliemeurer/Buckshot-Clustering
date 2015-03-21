@@ -2,6 +2,7 @@ import cluster as c
 import entry as e
 import numpy as np
 import utils as util
+import settings as ENV
 
 # Main clustering class
 class BuckshotClusters:
@@ -19,7 +20,11 @@ class BuckshotClusters:
 		while iterator < sqrtN:
 			iterator += 1
 			entry = util.chooseOneWithoutReplacement(entries)
-			clusters.append( c.Cluster(entry, entry) )
+			clusters.append( c.Cluster(entry) )
+		# STEP 2: Merge our initial clusters into K clusters using a matrix of values.  The centroid is recomputed each time they merge
+		while len(clusters) > ENV.K:
+			matrix = self.createGainMatrix(clusters)
+			clusterIndices = getMaxCoords(matrix)
 
 		# 2.These clusters are then merged into K clusters. One at a time, finding the best, or 
 		# closest merge (single link). The centroids are then recomputed when merged. 

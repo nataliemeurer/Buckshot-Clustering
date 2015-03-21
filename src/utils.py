@@ -14,12 +14,12 @@ def scaleZScore(value, mean, stdev):
 
 def chooseOneWithoutReplacement(list):
 	randIdx = math.floor(len(list) * random.random())
-	removedVal = list.pop(randIdx)
+	removedVal = list.pop(int(randIdx))
 	return removedVal
 
 def chooseOneWithReplacement(list):
 	randIdx = math.floor(len(list) * random.random())
-	val = list[randIdx:randIdx + 1]
+	val = list[int(randIdx):int(randIdx) + 1]
 	return val
 
 # Class used to manage sorted sets of a continuous variable

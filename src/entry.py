@@ -10,6 +10,12 @@ class Entry:
 	def getValues(self):
 		return self.values
 
+	def updateValue(self, attrName, attrValue):
+		if attrName in self.values:
+			self.values[attrName] = attrValue
+		else:
+			return None
+
 	# calculateEuclidian Distance
 	def euclidianDist(self, entry2):
 		sumOfSquares = 0
