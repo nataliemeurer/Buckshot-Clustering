@@ -22,6 +22,22 @@ def chooseOneWithReplacement(list):
 	val = list[int(randIdx):int(randIdx) + 1]
 	return val
 
+# Merges Two dictionaries that use integers as values
+def mergeDicts(dict1, dict2):
+	newDict = {}
+	for key in dict1:
+		if key in dict2:
+			newDict[key] = dict1[key] + dict2[key]
+		else:
+			newDict[key] = dict1[key]
+	for key in dict2:
+		if key in newDict:
+			continue
+		else:
+			newDict[key] = dict2[key]
+	return newDict
+
+
 # Class used to manage sorted sets of a continuous variable
 class continuousBin:
 	def __init__(self, attrName):
