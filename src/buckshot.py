@@ -21,9 +21,30 @@ class BuckshotClusters:
 			iterator += 1
 			entry = util.chooseOneWithoutReplacement(entries)
 			clusters.append( c.Cluster(entry, [e.Entry( entry.getValues().copy() )] ) )
-		clusters[0].printClusterData()
-		clusters[1].printClusterData()
-		newCluster = c.mergeClusters(clusters[0], clusters[1])
-		newCluster.printClusterData()
-		print newCluster.maxIntraClusterDistance()
+		# while len(clusters) > ENV.K:
+		matrix = self.createComparisonMatrix(clusters)
+
+
+
+	def createSimilarityMatrix(self, clusters):
+		print "\nConstructing Similarity Matrix for " + str(len(clusters)) + "clusters using the " + ENV.MERGING_CRITERIA + " merging criteria."
+		# Create a matrix full of None values of size equal to the length of clusters
+		matrix = []
+		count1 = 0
+		# Initialize matrix with all none values
+		while count1 < len(clusters):
+			count2 = 0
+			matrix.append([])
+			while count2 < len(clusters):
+				matrix[count1].append(None)
+				count2 += 1
+			count1 += 1
+		for rowIdx, row in enumerate(matrix):
+			for colIdx, col in enumerate(matrix):
+				if rowIdx == colIdx:
+					continue
+				else:
+					if ENV.MERGING_CRITERIA == "single-link":
+						matrix[rowIdx][colIdx] = clusters[rowIdx].singleLinkDist(clusters[colIdx])
+
 		

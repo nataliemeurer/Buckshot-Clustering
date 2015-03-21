@@ -13,7 +13,8 @@ class Cluster:
 				for key in centroidVals:
 					if util.isNumber(centroidVals[key]) == False:
 						self.categoricalAttrCounts[str(key) + " " + centroidVals[key]] = 1
-		
+	
+	# Prints data related to the currnet cluster
 	def printClusterData(self):
 		print "\nCluster with " + str(len(self.entries)) + " entries and the following centroid attributes:"
 		cVals = self.centroid.getValues()
@@ -28,9 +29,11 @@ class Cluster:
 	def getEntries(self):
 		return self.entries
 
+	# Get list of categorical counts
 	def getCatCounts(self):
 		return self.categoricalAttrCounts
 
+	# compute the maximum intracluster distance
 	def maxIntraClusterDistance(self):
 		# declare a max distance of zero
 		maxDistance = 0.0
@@ -48,6 +51,19 @@ class Cluster:
 						maxDistance = distance
 		return maxDistance
 
+	def singleLinkDist(self, cluster2):
+		minDist = None
+		for idx, entry in enumerate(self.entries):
+			# don't compare entry to itself or entries that have already been compared
+			for idx2, entry2 in enumerate(cluster2.getEntries()):
+				distance = entry.euclidianDist(entry2)
+				if minDist == None:
+					minDist = distance
+				elif distance < minDist:
+					minDist = distance
+		return minDist
+
+	# Add an entry to the cluster
 	def addEntry(self, entry):
 		entryVals = entry.getValues() 		# get the values we're adding
 		centroidVals = centroid.getValues()	# get the values of our centroid
