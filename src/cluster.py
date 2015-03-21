@@ -14,6 +14,11 @@ class Cluster:
 					if util.isNumber(centroidVals[key]) == False:
 						self.categoricalAttrCounts[str(key) + " " + centroidVals[key]] = 1
 		
+	def printClusterData(self):
+		print "\nCluster with " + str(len(self.entries)) + " entries and the following centroid attributes:"
+		cVals = self.centroid.getValues()
+		for key in cVals:
+			print "\t" + key + " " + str(cVals[key])
 
 	# get the current centroid
 	def getCentroid(self):
@@ -97,8 +102,9 @@ def mergeClusters(cluster1, cluster2):
 					if key in catKey:
 						if newCatCounts[catKey] > maxCount:
 							maxCount = newCatCounts[catKey]
-							maxVal = catKey.split[" "][1]
+							maxVal = catKey.split(" ")[1]
 					else:
 						continue
 				newCentroid[key] = maxVal
-	newCluster = Cluster(newCentroid, cluster1.getEntries() + cluster2.getEntries(), newCatCounts)
+	newCluster = Cluster(e.Entry(newCentroid), cluster1.getEntries() + cluster2.getEntries(), newCatCounts)
+	return newCluster

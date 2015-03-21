@@ -21,21 +21,9 @@ class BuckshotClusters:
 			iterator += 1
 			entry = util.chooseOneWithoutReplacement(entries)
 			clusters.append( c.Cluster(entry, [e.Entry( entry.getValues().copy() )] ) )
-		c.mergeClusters(clusters[0], clusters[1])
-		# STEP 2: Merge our initial clusters into K clusters using a matrix of values.  The centroid is recomputed each time they merge
-		# while len(clusters) > ENV.K:
-		# 	matrix = self.createGainMatrix(clusters)
-		# 	clusterIndices = getMaxCoords(matrix)
-
-
-		# 2.These clusters are then merged into K clusters. One at a time, finding the best, or 
-		# closest merge (single link). The centroids are then recomputed when merged. 
+		clusters[0].printClusterData()
+		clusters[1].printClusterData()
+		newCluster = c.mergeClusters(clusters[0], clusters[1])
+		newCluster.printClusterData()
+		print newCluster.maxIntraClusterDistance()
 		
-		# 3.Once there are K clusters, I add all N docs to the clusters. 
-		
-		# 4.If EXTENDED_K_MEANS_ALG is set to true: 
-		# 1.the centroids are first recomputed, then the adults are re-assigned to the closest clusters. 
-		
-		# 2.The SSE is computed, and if it decreases the SSE larger than <MIN_ACCEPTABLE_SEE_DIMINISHING_PERCENT> of the previous, then it performs another round of K-means. 
-		
-		# 3.Finally, a graph is computed showing the SSE over each round 
