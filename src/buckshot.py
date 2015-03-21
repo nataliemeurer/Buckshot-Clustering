@@ -31,6 +31,8 @@ class BuckshotClusters:
 		# Create a matrix full of None values of size equal to the length of clusters
 		matrix = []
 		count1 = 0
+		minSimilarityVal = None
+		maxSimilarityVal = None
 		# Initialize matrix with all none values
 		while count1 < len(clusters):
 			count2 = 0
@@ -39,12 +41,27 @@ class BuckshotClusters:
 				matrix[count1].append(None)
 				count2 += 1
 			count1 += 1
+		# for every single row
 		for rowIdx, row in enumerate(matrix):
+			# for each column
 			for colIdx, col in enumerate(matrix):
+				# we leave the value as None if 
 				if rowIdx == colIdx:
 					continue
 				else:
 					if ENV.MERGING_CRITERIA == "single-link":
-						matrix[rowIdx][colIdx] = clusters[rowIdx].singleLinkDist(clusters[colIdx])
+						distance = clusters[rowIdx].singleLinkDist(clusters[colIdx])
+						if minSimilarityVal == None:
+							minSimilarityVal = [distance, rowIdx, colIdx]
+							maxSimilarityVal = [distance, rowIdx, colIdx]
+						if distance < minSimilarityVal:
+							minSimilarityVal[0] = distance
+							minSimilarityVal[1] = rowIdx
+							minSimilarityVal[2] = colIdx
+						if distance > maxSimilarityVal:
+							maxSimilarityVal[0] = distance
+							maxSimilarityVal[1] = rowIdx
+							maxSimilarityVal[2] = colIdx
+						matrix[rowIdx][colIdx] = distance
 
 		
