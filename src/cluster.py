@@ -3,14 +3,17 @@ import entry as e
 
 class Cluster:
 	# Constructor: takes an entry as the centroid
-	def __init__(self, centroid):
+	def __init__(self, centroid, values, catCounts={}):
 		self.centroid = centroid
-		centroidVals = centroid.getValues()
-		self.entries = [e.Entry(centroidVals.copy())]
-		self.categoricalAttrCounts = {}
-		for key in centroidVals:
-			if util.isNumber(centroidVals[key]) == False:
-				self.categoricalAttrCounts[str(key) + " " + centroidVals[key]] = 1
+		self.entries = values
+		self.categoricalAttrCounts = catCounts
+		if util.dictIsEmpty(self.categoricalAttrCounts):
+			centroidVals = centroid.getValues()
+			for entry in self.entries:
+				for key in centroidVals:
+					if util.isNumber(centroidVals[key]) == False:
+						self.categoricalAttrCounts[str(key) + " " + centroidVals[key]] = 1
+		
 
 	# get the current centroid
 	def getCentroid(self):
@@ -67,15 +70,35 @@ class Cluster:
 
 
 # merges two clusters and returns the result of the merge. Does not delete or alter either cluster
-def mergeClusters(self, cluster2):
-	# merge our values
-	c1Count = float(len(cluster1.getEntries()))
-	c2Count = float(len(cluster2.getEntries()))
-	c1Centroid = cluster1.getCentroid().getValues()
-	c2Centroid = cluster2.getCentroid().getValues()
+def mergeClusters(cluster1, cluster2):
+	# Declare variables to refer to everything
+	c1Count     = float(len(cluster1.getEntries()))
+	c2Count     = float(len(cluster2.getEntries()))
+	c1Centroid  = cluster1.getCentroid().getValues()
+	c2Centroid  = cluster2.getCentroid().getValues()
 	c1catCounts = cluster1.getCatCounts()
 	c2catCounts = cluster2.getCatCounts()
 	# update categorical counts
 	newCatCounts = util.mergeDicts(c1catCounts, c2catCounts)
-	newCentroid 
+	newCentroid = {}
+	# for each key, we find the new centroid's values
 	for key in c1Centroid:
+		if util.isNumber(c1Centroid[key]):	# if we're dealing with a continuous variable here
+			newCentroid[key] = float(c1Centroid[key] * c1Count + c2Centroid[key] * c2Count) / float(c1Count + c2Count)
+		else:								# we're dealing with a categorical variable
+			# save time if the modes are the same
+			if c1Centroid[key] == c2Centroid[key]:
+				newCentroid[key] = c1Centroid[key]
+			else:
+				# determine the mode
+				maxCount = 0	# store a maxCount
+				maxVal = ""
+				for catKey in newCatCounts:
+					if key in catKey:
+						if newCatCounts[catKey] > maxCount:
+							maxCount = newCatCounts[catKey]
+							maxVal = catKey.split[" "][1]
+					else:
+						continue
+				newCentroid[key] = maxVal
+	newCluster = Cluster(newCentroid, cluster1.getEntries() + cluster2.getEntries(), newCatCounts)

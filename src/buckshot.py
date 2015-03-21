@@ -20,12 +20,13 @@ class BuckshotClusters:
 		while iterator < sqrtN:
 			iterator += 1
 			entry = util.chooseOneWithoutReplacement(entries)
-			clusters.append( c.Cluster(entry) )
+			clusters.append( c.Cluster(entry, [e.Entry( entry.getValues().copy() )] ) )
+		c.mergeClusters(clusters[0], clusters[1])
 		# STEP 2: Merge our initial clusters into K clusters using a matrix of values.  The centroid is recomputed each time they merge
 		# while len(clusters) > ENV.K:
 		# 	matrix = self.createGainMatrix(clusters)
 		# 	clusterIndices = getMaxCoords(matrix)
-			
+
 
 		# 2.These clusters are then merged into K clusters. One at a time, finding the best, or 
 		# closest merge (single link). The centroids are then recomputed when merged. 

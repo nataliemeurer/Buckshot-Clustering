@@ -22,6 +22,11 @@ def chooseOneWithReplacement(list):
 	val = list[int(randIdx):int(randIdx) + 1]
 	return val
 
+def dictIsEmpty(dict):
+	for key in dict:
+		return False
+	return True
+
 # Merges Two dictionaries that use integers as values
 def mergeDicts(dict1, dict2):
 	newDict = {}
