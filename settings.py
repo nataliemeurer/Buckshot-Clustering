@@ -1,11 +1,11 @@
 # USED TO STORE GLOBAL / ENVIRONMENTAL VARIABLES
 
 # GENERAL SETTINGS
-PROGRESS_BAR = True 					# set whether a progress bar is used to show output.  Should be turned off when writing to files
+PROGRESS_BAR = True 					# BOOLEAN: set whether a progress bar is used to show output.  Should be turned off when writing to files
 
 
 # DATA SETTINGS
-DATA_SRC = './data/adult-big.arff'
+DATA_SRC = './data/adult-big.arff'		# STRING: The path to the data file
 
 
 # PREPROCESSOR SETTINGS
@@ -22,6 +22,9 @@ REMOVED_ATTRS = ["fnlwgt:", "education-num:"]	# LIST(strings): name of the attri
 
 
 # CLUSTERING SETTINGS
+USE_RANDOM_SAMPLE = True 				# BOOLEAN: Determines whether the algorithm will sample the whole data set or a fixed size
+SAMPLE_SIZE = 2000 					# INT: Sets the sample size that the algorithm will cluster, which is randomly sampled without replacement
+SAMPLE_WITH_REPLACEMENT = False 		# BOOLEAN: If true, samples data with replacement.  Otherwise, does not replace
 K = 12									# INT: number of clusters desired
 DISTANCE_MEASURE = "euclidian"			# STRING: formula used to measure distance, currently only supports euclidian
 MERGING_CRITERIA = "complete-link"		# MERGING_CRITERIA: single-link, complete-link, centroid, wards

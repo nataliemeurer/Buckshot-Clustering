@@ -28,4 +28,15 @@ entries = fullData.getDataAsEntries()		# convert all data points to the structur
 
 # CLUSTERING
 clusterDriver = buck.BuckshotClusters()		# create a cluster driver to do our clustering
-clusterDriver.clusterEntries(entries)		# pass our data into the cluster to be buckshot clustered	
+if ENV.USE_RANDOM_SAMPLE == True:
+	sample = []
+	count = 0
+	while count < ENV.SAMPLE_SIZE:
+		if ENV.SAMPLE_WITH_REPLACEMENT == True:
+			sample.append(util.chooseOneWithReplacement(entries))
+		else:
+			sample.append(util.chooseOneWithoutReplacement(entries))
+		count += 1
+	clusterDriver.clusterEntries(sample)
+else:
+	clusterDriver.clusterEntries(entries)		# pass our data into the cluster to be buckshot clustered	

@@ -3,6 +3,7 @@ import entry as e
 import numpy as np
 import utils as util
 import settings as ENV
+import tabulate
 
 # Main clustering class
 class BuckshotClusters:
@@ -41,17 +42,52 @@ class BuckshotClusters:
 			clusters.append(newCluster)
 		# We now have our K clusters.  Now, we can assign the remaining entries to them and we're done
 		count = 0
-		for entry in entries:
+		print "Assigning remaining values to nearest cluster"
+		if ENV.PROGRESS_BAR == True:
+			util.updateProgress(0)
+		for idx, entry in enumerate(entries):
+			if ENV.PROGRESS_BAR == True:
+				util.updateProgress(float(idx) / float(len(entries)))
 			self.assignEntryToNearestCluster(entry, clusters)
 			count += 1
+		if ENV.PROGRESS_BAR == True:
+			util.updateProgress(1)
 		print "\nAssigned remaining " + str(count) + " entries to nearest clusters."
-		for cluster in clusters:
+		self.computeAndDisplayResults(clusters)
+
+	# Calculates error metrics and displays the results of the operation
+	def computeAndDisplayResults(self, clusters):
+		headers = ["Cluster Number", "Cluster Size", "Centroid Class Value", "Max Intra-Dist", "Sum of Squares Error"]
+		resultsStore = []
+		for idx, cluster in enumerate(clusters):
+			data = [idx + 1, cluster.getSize()]
 			cluster.recalculateCentroid()
+			#  add centroid class value
+			data.append(cluster.getCentroid().getValues()[ENV.CLASSIFIER_NAME])
 			cluster.printClusterData()
+			
+			# Intra cluster distance calculation
 			print "Calculating Max Intra Cluster Distance"
 			micd = cluster.maxIntraClusterDistance()
-			print "\nMax intra-cluster distance:" + str(micd)
-
+			data.append(micd)
+			print "\nMax intra-cluster distance: " + str(micd)
+			
+			# Sum of Squares Error calculation
+			print "Calculating Sum of Squares Error"
+			sse = cluster.sumOfSquaresError()
+			data.append(sse)
+			# Print sse
+			print "\nSum of Squares Error: " + str(sse)
+			
+			# Add to our results store for result output later
+			resultsStore.append(data)
+		# Print and display results
+		print "\nRESULTS:"
+		print "K-Value: " + str(ENV.K) + "\nClassifier Name: " + str(ENV.CLASSIFIER_NAME)
+		if ENV.USE_RANDOM_SAMPLE == True:
+			print "SampleSize: " + str(ENV.SAMPLE_SIZE) + "\n"
+		# Print a table of our results
+		print tabulate(resultsStore, headers, tablefmt="grid")
 
 	def assignEntryToNearestCluster(self, entry, clusters):
 		minCluster = [clusters[0], entry.euclidianDist(clusters[0].getCentroid())]

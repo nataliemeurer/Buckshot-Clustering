@@ -1,5 +1,6 @@
 import utils as util
 import entry as e
+import numpy as np
 
 class Cluster:
 	# Constructor: takes an entry as the centroid
@@ -29,6 +30,9 @@ class Cluster:
 	def getEntries(self):
 		return self.entries
 
+	def getSize(self):
+		return len(self.entries)
+
 	# Get list of categorical counts
 	def getCatCounts(self):
 		return self.categoricalAttrCounts
@@ -48,6 +52,7 @@ class Cluster:
 				else:
 					distance = entry.euclidianDist(entry2)
 					sumOfSquares += np.power(distance, 2)
+		util.updateProgress(1)
 		return sumOfSquares
 
 	# compute the maximum intracluster distance
@@ -66,6 +71,7 @@ class Cluster:
 					distance = entry.euclidianDist(entry2)
 					if distance > maxDistance:
 						maxDistance = distance
+		util.updateProgress(1)
 		return maxDistance
 
 	def centroidDist(self, cluster2):
