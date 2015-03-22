@@ -93,6 +93,8 @@ class BuckshotClusters:
 						distance = clusters[rowIdx].singleLinkDist(clusters[colIdx])
 					elif ENV.MERGING_CRITERIA == "complete-link":
 						distance = clusters[rowIdx].completeLinkDist(clusters[colIdx])
+					elif ENV.MERGING_CRITERIA == "centroid":
+						distance = clusters[rowIdx].centroidDist(clusters[colIdx])
 					if minSimilarity == None:
 						minSimilarity = [distance, rowIdx, colIdx]
 						maxSimilarity = [distance, rowIdx, colIdx]

@@ -68,6 +68,9 @@ class Cluster:
 						maxDistance = distance
 		return maxDistance
 
+	def centroidDist(self, cluster2):
+		return self.centroid.euclidianDist(cluster2.getCentroid())
+
 	def singleLinkDist(self, cluster2):
 		minDist = None
 		for idx, entry in enumerate(self.entries):
