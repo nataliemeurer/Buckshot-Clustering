@@ -13,7 +13,7 @@ class BuckshotClusters:
 
 	# Main clustering function
 	def clusterEntries(self, entries):
-		# STEP 1: Randomly select sqrt(n) adults and let them serve as our initial cluster centroids
+		# STEP 1: Randomly select sqrt(n) adults and let them serve as our initial cluster clusters
 		n = float(len(entries))			# store number of entries
 		sqrtN = np.floor(np.sqrt(n))	# find the square root of our total number of entries
 		clusters = []					# create a list to store our clusters
@@ -60,16 +60,21 @@ class BuckshotClusters:
 
 	# Calculates error metrics and displays the results of the operation
 	def computeAndDisplayResults(self, clusters):
-		headers = ["Cluster Number", "Cluster Size", "Centroid Class Value", "Max Intra-Dist", "Sum of Squares Error", "Class Accuracy"]
-		resultsStore = []
-		intraDists = []
-		sseValues = []
-		classAcc = []
+		headers = ["Cluster Number", "Cluster Size", "Centroid Class Value", "Max Intra-Dist", "Sum of Squares Error", "Class Evaluation"]
+		headers2 = ["Sample Size",	"K Val", "Merging Criteria", "Avg Intra Dist", "Avg Inter Dist", "Avg SSE", "Max C Size", "Min C Size", "Avg C Size", "Avg Class Eval"]
+		resultsStore = []	# stores basic results
+		intraDists = []     # stores intra cluster distances for averaging
+		sseValues = []      # stores sum of squares errors for averaging
+		classAccVals = []   # stores class accuracy vals for averaging
+		clusterSizes = []
+		# Do the calculations for each cluster
 		for idx, cluster in enumerate(clusters):
 			data = [idx + 1, cluster.getSize()]
+			# recalculate the centroid after we have added our new values
 			cluster.recalculateCentroid()
 			#  add centroid class value
 			data.append(cluster.getCentroid().getValues()[ENV.CLASSIFIER_NAME])
+			# print the cluster data
 			cluster.printClusterData()
 			
 			# Intra cluster distance calculation
@@ -84,22 +89,38 @@ class BuckshotClusters:
 			sse = cluster.sumOfSquaresError()
 			data.append(sse)
 			sseValues.append(sse)
-			# Print sse
 			print "\nSum of Squares Error: " + str(sse)
 			
-			print "Calculating Class Accuracy"
+			# Class Label Evaluation
+			print "Calculating Class Label Evaluation (percent purity)"
+			catCounts = cluster.getCatCounts()
+			numOfClass = float(catCounts[ENV.CLASSIFIER_NAME + " " + cluster.getCentroid().getValues()[ENV.CLASSIFIER_NAME]])
+			classAcc = (numOfClass / float(cluster.getSize())) * 100
+			classAccVals.append(classAcc)
+			data.append(classAcc)
+			print "Class Label Percentage: " + str(classAcc) + "%"
 
-
+			# Add cluster size
+			clusterSizes.append(cluster.getSize())
 
 			# Add to our results store for result output later
 			resultsStore.append(data)
+		interDists = []
+		for cluster in clusters:
+			if cluster == clusters[0]:
+				continue
+			else:
+				interDists.append(clusters[0].singleLinkDist(cluster))
+
 		# Print and display results
 		print "\nRESULTS:"
-		print "K-Value: " + str(ENV.K) + "\nClassifier Name: " + str(ENV.CLASSIFIER_NAME)
-		if ENV.USE_RANDOM_SAMPLE == True:
-			print "SampleSize: " + str(ENV.SAMPLE_SIZE) + "\n"
 		# Print a table of our results
 		print tabulate.tabulate(resultsStore, headers, tablefmt="simple")
+		# Print averaged results
+		avgResults = [[ENV.SAMPLE_SIZE, ENV.K, ENV.MERGING_CRITERIA, np.mean(intraDists), np.mean(interDists), np.mean(sseValues), np.max(clusterSizes), np.min(clusterSizes), np.mean(clusterSizes), np.mean(classAccVals)]]
+		print "\n\nOverall:"
+		print tabulate.tabulate(avgResults, headers2, tablefmt="simple")
+		
 
 	def assignEntryToNearestCluster(self, entry, clusters):
 		minCluster = [clusters[0], entry.euclidianDist(clusters[0].getCentroid())]
