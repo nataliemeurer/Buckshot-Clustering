@@ -22,10 +22,10 @@ REMOVED_ATTRS = ["fnlwgt:", "education-num:"]	# LIST(strings): name of the attri
 
 
 # CLUSTERING SETTINGS
-K = 9									# INT: number of clusters desired
+K = 12									# INT: number of clusters desired
 DISTANCE_MEASURE = "euclidian"			# STRING: formula used to measure distance, currently only supports euclidian
-MERGING_CRITERIA = "single-link"		# MERGING_CRITERIA: single-link, complete-link, avg-link, centroid, wards
-MAX_SIMILARITY_THRESHOLD = 10			# sets the maximum distance threshold to merge two clusters
+MERGING_CRITERIA = "complete-link"		# MERGING_CRITERIA: single-link, complete-link, centroid, wards
+MAX_SIMILARITY_THRESHOLD = 5.0			# FLOAT: sets the maximum distance threshold to merge two clusters
 
 # VALIDATOR SETTINGS
 NUM_OF_FOLDS = 10

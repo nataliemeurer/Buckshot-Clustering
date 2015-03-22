@@ -87,7 +87,7 @@ class dataBin:
 				util.updateProgress(float(idx)/float(len(self.data)))
 				# get the entry's z-score
 				zScore = util.scaleZScore(entry[attrName], self.continuousVariables[attrName].getMean(), stdev)
-				if zScore > 2.5 or zScore < -2.5:
+				if zScore > settings.OUTLIER_ZSCORE_THRESHOLD[1] or zScore < settings.OUTLIER_ZSCORE_THRESHOLD[0]:
 					entriesToRemove.append(idx)
 			iterator = len(entriesToRemove) - 1
 			util.updateProgress(1)

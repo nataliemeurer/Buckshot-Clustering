@@ -26,7 +26,10 @@ class BuckshotClusters:
 			matrixInfo = self.createSimilarityMatrix(clusters)
 			minimumDistance = matrixInfo[1]
 			# Regardless of our method, we care most about our minimum distance clusters.  We merge those using the indices provided by the similarity matrix function
-			newCluster = c.mergeClusters(clusters[minimumDistance[1]], clusters[minimumDistance[2]])
+			if minimumDistance[0] < ENV.MAX_SIMILARITY_THRESHOLD:
+				newCluster = c.mergeClusters(clusters[minimumDistance[1]], clusters[minimumDistance[2]])
+			else:
+				break
 			# pop the larger index first
 			if minimumDistance[1] > minimumDistance[2]:
 				clusters.pop(minimumDistance[1]).printClusterData()
