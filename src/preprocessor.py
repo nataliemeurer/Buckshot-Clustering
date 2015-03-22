@@ -35,12 +35,6 @@ class dataBin:
 					self.fillMissingCategoricalValues(attr[0])
 				print "Filled missing values for " + attr[0]
 
-	def normalizeContinuousVariables(self, method=settings.NORMALIZATION_METHOD, minimum=settings.NORMALIZED_MIN, maximum=settings.NORMALIZED_MAX):
-		for attr in self.attributes:
-			if attr[1] == 'real':
-				# Fill missing continuous values
-				self.normalizeAttribute(attr[0], minimum, maximum, method)
-
 	# Remove the named attribute from our data set
 	def removeAttribute(self, attrName):
 		print "Removing all " + attrName + " attributes\n"
@@ -75,6 +69,51 @@ class dataBin:
 		for idx, value in enumerate(self.attributes):
 			if value[0] == settings.CLASSIFIER_NAME:
 				self.classIdx = idx
+
+	# removes all outliers from the data set, based on z-score variables
+	def removeAllOutliers(self):
+		for key in self.continuousVariables:
+			self.removeAttrOutliers(key)
+
+	# Remove outliers for one continuous variables.  Outliers are defined as having a score > 2.5 or < -2.5
+	def removeAttrOutliers(self, attrName):
+		if attrName in self.continuousVariables:
+			print "\n\nRemoving outliers for " + attrName + " based on z-score."
+			stdev = np.std(self.continuousVariables[attrName].getValues());
+			# store the indices of the entries we want to remove
+			entriesToRemove = []
+			util.updateProgress(0)
+			for idx, entry in enumerate(self.data):
+				util.updateProgress(float(idx)/float(len(self.data)))
+				# get the entry's z-score
+				zScore = util.scaleZScore(entry[attrName], self.continuousVariables[attrName].getMean(), stdev)
+				if zScore > 2.5 or zScore < -2.5:
+					entriesToRemove.append(idx)
+			iterator = len(entriesToRemove) - 1
+			util.updateProgress(1)
+			print "\n"
+			util.updateProgress(0)
+			while iterator > -1:
+				util.updateProgress(1.0 / float(iterator + 1.0))
+				removedEntry = self.data.pop(entriesToRemove[iterator])
+				for key in removedEntry:
+					if util.isNumber(removedEntry[key]):
+						self.continuousVariables[key].removeValue(removedEntry[key], removedEntry[settings.CLASSIFIER_NAME])
+					else:
+						self.categoricalVariables[key].removeValue(removedEntry[key], removedEntry[settings.CLASSIFIER_NAME])
+				iterator -= 1
+			util.updateProgress(1)
+			print "\nRemoved " + str(len(entriesToRemove)) + " entries."
+		else:
+			print "Invalid Attribute requested for removal of outliers"
+
+
+	# Normalize variables
+	def normalizeContinuousVariables(self, method=settings.NORMALIZATION_METHOD, minimum=settings.NORMALIZED_MIN, maximum=settings.NORMALIZED_MAX):
+		for attr in self.attributes:
+			if attr[1] == 'real':
+				# Fill missing continuous values
+				self.normalizeAttribute(attr[0], minimum, maximum, method)
 
 	# normalizes the attribute
 	def normalizeAttribute(self, attrName, minimum=0, maximum=1, method=settings.NORMALIZATION_METHOD):

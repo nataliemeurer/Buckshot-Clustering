@@ -46,7 +46,7 @@ def mergeDicts(dict1, dict2):
 # Class used to manage sorted sets of a continuous variable
 class continuousBin:
 	def __init__(self, attrName):
-		self.values = []
+		self.values = []			# a sorted list of values of continuous variables
 		self.attrName = attrName
 		self.mean = None
 		self.classMean = {}
@@ -80,6 +80,13 @@ class continuousBin:
 
 	def getMean(self):
 		return self.mean
+
+	def removeValue(self, value, className):
+		if len(self.values) > 1:
+			self.mean = float(self.mean * len(self.values) - value) / float(len(self.values) - 1)
+			self.classMean[className][0] = float(self.classMean[className][0] * len(self.values) - value) / float(len(self.values) - 1)
+			self.classMean[className][1] -= 1
+		self.values.remove(value)
 
 	def getMin(self):
 		return self.min
@@ -128,6 +135,18 @@ class categoricalBin:
 			self.mode = [1, val]
 			self.categories[val] += 1
 			self.classCategories[str(val) + " " + className] = 1
+
+	def removeValue(self, value, className):
+		if value == self.mode[1]:
+			self.mode[0] -= 1
+		for key in self.categories:
+			if self.categories[key] > self.mode[0]:
+				self.mode[0] = self.categories[key]
+				self.mode[1] = key
+		classKey = str(value) + " " + className
+		self.classCategories[classKey] -= 1
+		if self.classCategories[classKey] > self.classModes[className][0]:
+			self.classModes[className] = [ self.classCategories[classKey], value ]
 
 	def getMode(self):
 		return self.mode[1]

@@ -75,6 +75,30 @@ class Cluster:
 					maxDist = distance
 		return maxDist
 
+	def recalculateCentroid(self):
+		centroidVals = self.centroid.getValues()
+		for key in centroidVals:
+			if util.isNumber(centroidVals[key]):
+				numSum = 0
+				for entry in self.entries:
+					numSum += entry.getValues()[key]
+				self.centroid.updateValue(key, numSum / float(len(self.entries)))
+			else:
+				catCount = {}
+				for entry in self.entries:
+					entryVals = entry.getValues()
+					if entryVals[key] in catCount:
+						catCount[entryVals[key]] += 1
+					else:
+						catCount[entryVals[key]] = 1
+				maxCat = ["", 0]
+				for catKey in catCount:
+					if catCount[catKey] > maxCat[1]:
+						maxCat[0] = catKey
+						maxCat[1] = catCount[catKey]
+				self.centroid.updateValue(key, maxCat[0])
+
+
 	def addEntry(self, entry):
 		for key in entry.getValues():
 			if util.isNumber(entry.getValues()[key]) == False:

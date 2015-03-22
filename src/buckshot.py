@@ -37,10 +37,17 @@ class BuckshotClusters:
 			# add the new cluster to our list of clusters
 			clusters.append(newCluster)
 		# We now have our K clusters.  Now, we can assign the remaining entries to them and we're done
+		count = 0
 		for entry in entries:
 			self.assignEntryToNearestCluster(entry, clusters)
+			count += 1
+		print "\nAssigned remaining " + str(count) + " entries to nearest clusters."
 		for cluster in clusters:
+			cluster.recalculateCentroid()
 			cluster.printClusterData()
+			print "Calculating Max Intra Cluster Distance"
+			micd = cluster.maxIntraClusterDistance()
+			print "\nMax intra-cluster distance:" + str(micd)
 
 
 	def assignEntryToNearestCluster(self, entry, clusters):
@@ -51,7 +58,6 @@ class BuckshotClusters:
 				minCluster[0] = cluster
 				minCluster[1] = dist
 		minCluster[0].addEntry(entry)
-		print "Assigned"
 
 	# Creates a similarity matrix.  Tracks the minimum and maximum values in the matrix. Returns in format[matrix, [minValue, idx1, idx2], [maxValue, idx1, idx2]]
 	def createSimilarityMatrix(self, clusters):
