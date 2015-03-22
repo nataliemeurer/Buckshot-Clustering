@@ -39,10 +39,19 @@ class BuckshotClusters:
 		# We now have our K clusters.  Now, we can assign the remaining entries to them and we're done
 		for entry in entries:
 			self.assignEntryToNearestCluster(entry, clusters)
+		for cluster in clusters:
+			cluster.printClusterData()
 
 
 	def assignEntryToNearestCluster(self, entry, clusters):
-		return 1
+		minCluster = [clusters[0], entry.euclidianDist(clusters[0].getCentroid())]
+		for cluster in clusters:
+			dist = entry.euclidianDist(cluster.getCentroid())
+			if dist < minCluster[1]:
+				minCluster[0] = cluster
+				minCluster[1] = dist
+		minCluster[0].addEntry(entry)
+		print "Assigned"
 
 	# Creates a similarity matrix.  Tracks the minimum and maximum values in the matrix. Returns in format[matrix, [minValue, idx1, idx2], [maxValue, idx1, idx2]]
 	def createSimilarityMatrix(self, clusters):

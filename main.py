@@ -22,4 +22,4 @@ entries = fullData.getDataAsEntries()		# convert all data points to the structur
 
 # CLUSTERING
 clusterDriver = buck.BuckshotClusters()		# create a cluster driver to do our clustering
-clusterDriver.clusterEntries(entries[0:1000])# pass our data into the cluster to be buckshot clustered	
+clusterDriver.clusterEntries(entries)		# pass our data into the cluster to be buckshot clustered	

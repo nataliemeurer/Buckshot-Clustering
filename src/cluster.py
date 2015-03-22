@@ -63,8 +63,30 @@ class Cluster:
 					minDist = distance
 		return minDist
 
-	# Add an entry to the cluster
+	def completeLinkDist(self, cluster2):
+		maxDist = None
+		for idx, entry in enumerate(self.entries):
+			# don't compare entry to itself or entries that have already been compared
+			for idx2, entry2 in enumerate(cluster2.getEntries()):
+				distance = entry.euclidianDist(entry2)
+				if maxDist == None:
+					maxDist = distance
+				elif distance > maxDist:
+					maxDist = distance
+		return maxDist
+
 	def addEntry(self, entry):
+		for key in entry.getValues():
+			if util.isNumber(entry.getValues()[key]) == False:
+				attrKey = str(key) + " " + str(entry.getValues()[key])
+				if attrKey in self.categoricalAttrCounts:
+					self.categoricalAttrCounts[attrKey] += 1
+				else:
+					self.categoricalAttrCounts[attrKey] = 1
+		self.entries.append(entry)
+
+	# Add an entry to the cluster
+	def addEntryAndUpdateCentroid(self, entry):
 		entryVals = entry.getValues() 		# get the values we're adding
 		centroidVals = centroid.getValues()	# get the values of our centroid
 		# for each key, we update the centroid

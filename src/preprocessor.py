@@ -41,8 +41,9 @@ class dataBin:
 				# Fill missing continuous values
 				self.normalizeAttribute(attr[0], minimum, maximum, method)
 
+	# Remove the named attribute from our data set
 	def removeAttribute(self, attrName):
-		print "\nRemoving all " + attrName + " attributes"
+		print "Removing all " + attrName + " attributes\n"
 		# Remove from main data
 		for entry in self.data:
 			entry.pop(attrName)
@@ -60,9 +61,15 @@ class dataBin:
 				contVarKeys.append(key)
 		for item in contVarKeys:
 			self.continuousVariables.pop(item)
+		# Remove from continuous variable
+		catVarKeys = []
+		for key in self.categoricalVariables:
+			if attrName in key:
+				catVarKeys.append(key)
+		for item in catVarKeys:
+			self.categoricalVariables.pop(item)
 		# Remove from attributes
 		for idx, value in enumerate(self.attributes):
-			print value[0]
 			if value[0] == attrName:
 				self.attributes.pop(idx)
 		for idx, value in enumerate(self.attributes):
@@ -107,7 +114,7 @@ class dataBin:
 			util.updateProgress(1)
 			self.continuousVariables[attrName] = newBin
 		else:
-			print "notfound"
+			print "Attribute " + attrName + " was not found"
 			return None
 
 	# fills missing values for a single categorical classifier
