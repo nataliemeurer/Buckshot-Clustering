@@ -103,6 +103,7 @@ class Cluster:
 
 	def recalculateCentroid(self):
 		centroidVals = self.centroid.getValues()
+		self.categoricalAttrCounts = {}
 		for key in centroidVals:
 			if util.isNumber(centroidVals[key]):
 				numSum = 0
@@ -110,13 +111,19 @@ class Cluster:
 					numSum += entry.getValues()[key]
 				self.centroid.updateValue(key, numSum / float(len(self.entries)))
 			else:
+				# create an object to store the categorical variable
 				catCount = {}
+				# for each entry
 				for entry in self.entries:
-					entryVals = entry.getValues()
-					if entryVals[key] in catCount:
+					entryVals = entry.getValues()  # get the values
+					newKey = str(key) + " " + entryVals[key]
+					# if we already have the values, we increment
+					if entryVals[key] in catCount and newKey in self.categoricalAttrCounts:
 						catCount[entryVals[key]] += 1
+						self.categoricalAttrCounts[newKey] += 1
 					else:
 						catCount[entryVals[key]] = 1
+						self.categoricalAttrCounts[newKey] = 1
 				maxCat = ["", 0]
 				for catKey in catCount:
 					if catCount[catKey] > maxCat[1]:

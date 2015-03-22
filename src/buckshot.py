@@ -60,8 +60,11 @@ class BuckshotClusters:
 
 	# Calculates error metrics and displays the results of the operation
 	def computeAndDisplayResults(self, clusters):
-		headers = ["Cluster Number", "Cluster Size", "Centroid Class Value", "Max Intra-Dist", "Sum of Squares Error"]
+		headers = ["Cluster Number", "Cluster Size", "Centroid Class Value", "Max Intra-Dist", "Sum of Squares Error", "Class Accuracy"]
 		resultsStore = []
+		intraDists = []
+		sseValues = []
+		classAcc = []
 		for idx, cluster in enumerate(clusters):
 			data = [idx + 1, cluster.getSize()]
 			cluster.recalculateCentroid()
@@ -73,15 +76,21 @@ class BuckshotClusters:
 			print "Calculating Max Intra Cluster Distance"
 			micd = cluster.maxIntraClusterDistance()
 			data.append(micd)
+			intraDists.append(micd)
 			print "\nMax intra-cluster distance: " + str(micd)
 			
 			# Sum of Squares Error calculation
 			print "Calculating Sum of Squares Error"
 			sse = cluster.sumOfSquaresError()
 			data.append(sse)
+			sseValues.append(sse)
 			# Print sse
 			print "\nSum of Squares Error: " + str(sse)
 			
+			print "Calculating Class Accuracy"
+
+
+
 			# Add to our results store for result output later
 			resultsStore.append(data)
 		# Print and display results
