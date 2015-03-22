@@ -22,6 +22,7 @@ class BuckshotClusters:
 			iterator += 1
 			entry = util.chooseOneWithoutReplacement(entries)
 			clusters.append( c.Cluster(entry, [e.Entry( entry.getValues().copy() )] ) )
+		# STEP 2: Merge our clusters based on a similarity matrix until we have K clusters
 		while len(clusters) > ENV.K:
 			# calculate a comparison matrix
 			matrixInfo = self.createSimilarityMatrix(clusters)
@@ -40,7 +41,8 @@ class BuckshotClusters:
 				clusters.pop(minimumDistance[1])
 			# add the new cluster to our list of clusters
 			clusters.append(newCluster)
-		# We now have our K clusters.  Now, we can assign the remaining entries to them and we're done
+		
+		# STEP 3: We now have our K clusters.  Now, we can assign the remaining entries to them and we're done
 		count = 0
 		print "Assigning remaining values to nearest cluster"
 		if ENV.PROGRESS_BAR == True:
@@ -53,6 +55,7 @@ class BuckshotClusters:
 		if ENV.PROGRESS_BAR == True:
 			util.updateProgress(1)
 		print "\nAssigned remaining " + str(count) + " entries to nearest clusters."
+		# STEP 4: Calculate error margins and display the results
 		self.computeAndDisplayResults(clusters)
 
 	# Calculates error metrics and displays the results of the operation
@@ -87,7 +90,7 @@ class BuckshotClusters:
 		if ENV.USE_RANDOM_SAMPLE == True:
 			print "SampleSize: " + str(ENV.SAMPLE_SIZE) + "\n"
 		# Print a table of our results
-		print tabulate(resultsStore, headers, tablefmt="grid")
+		print tabulate.tabulate(resultsStore, headers, tablefmt="simple")
 
 	def assignEntryToNearestCluster(self, entry, clusters):
 		minCluster = [clusters[0], entry.euclidianDist(clusters[0].getCentroid())]
