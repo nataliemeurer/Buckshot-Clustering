@@ -9,31 +9,33 @@ import cluster as c
 import buckshot as buck
 import datetime
 
-mergingCriterias = ["single-link"]*7 + ["complete-link"]*7 + ["centroid"]*7
+mergingCriterias = ["single-link"]*8 + ["complete-link"]*8 + ["centroid"]*8
 print mergingCriterias
-kValues = [3, 5, 8, 10, 15, 25, 50] * 3
+kValues = [1, 3, 5, 8, 10, 15, 25, 50] * 3
 print kValues
 iterCount = 0
+
+# FILE READING
+data = arff.readArff(ENV.DATA_SRC)			# read our file and store the data
+
+# PREPROCESSING
+fullData = processor.dataBin(data)			# create a processing bin to manipulate our data
+fullData.fillMissingValues()				# fill all missing values
+for attrName in ENV.REMOVED_ATTRS:
+	fullData.removeAttribute(attrName)		# if specific attributes have been requested to be removed, we do so here
+if ENV.REMOVE_OUTLIERS == True:
+	if ENV.REMOVE_ALL_OUTLIERS == True:		# if we need to remove all outliers, we do so here
+		fullData.removeAllOutliers()
+	else:
+		for attrName in ENV.REMOVED_OUTLIERS:
+			fullData.removeAttrOutliers(attrName)	# remove specific outliers
+fullData.normalizeContinuousVariables()				# Normalize all continuous variables using the method specified in settings
 
 while iterCount < (len(mergingCriterias) - 1):
 	ENV.K = kValues[iterCount]
 	ENV.MERGING_CRITERIA = mergingCriterias[iterCount]
 
-	# FILE READING
-	data = arff.readArff(ENV.DATA_SRC)			# read our file and store the data
-
-	# PREPROCESSING
-	fullData = processor.dataBin(data)			# create a processing bin to manipulate our data
-	fullData.fillMissingValues()				# fill all missing values
-	for attrName in ENV.REMOVED_ATTRS:
-		fullData.removeAttribute(attrName)		# if specific attributes have been requested to be removed, we do so here
-	if ENV.REMOVE_OUTLIERS == True:
-		if ENV.REMOVE_ALL_OUTLIERS == True:		# if we need to remove all outliers, we do so here
-			fullData.removeAllOutliers()
-		else:
-			for attrName in ENV.REMOVED_OUTLIERS:
-				fullData.removeAttrOutliers(attrName)	# remove specific outliers
-	fullData.normalizeContinuousVariables()				# Normalize all continuous variables using the method specified in settings
+	
 	entries = fullData.getDataAsEntries()				# convert all data points to the structure of an entry, a class I defined
 
 	# CLUSTERING
