@@ -9,10 +9,8 @@ import cluster as c
 import buckshot as buck
 import datetime
 
-mergingCriterias = ["single-link"]*8 + ["complete-link"]*8 + ["centroid"]*8
-print mergingCriterias
-kValues = [1, 3, 5, 8, 10, 15, 25, 50] * 3
-print kValues
+mergingCriterias = ["single-link"]*10 + ["complete-link"]*10 + ["centroid"]*10
+kValues = [1, 3, 5, 8, 10, 15, 25, 50, 100, 500] * 3
 iterCount = 0
 
 # FILE READING

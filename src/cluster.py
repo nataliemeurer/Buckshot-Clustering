@@ -70,7 +70,7 @@ class Cluster:
 				if distance > maxDist:
 				 	maxDist = distance
 			util.updateProgress(1)
-			return sumOfSquares
+			return maxDist
 
 	# compute the SSE of our cluster
 	def sumOfSquaresError(self):
@@ -117,10 +117,8 @@ class Cluster:
 
 	# Recalculates centroid (used if you have added values but not changed the centroid)
 	def recalculateCentroid(self):
-		print "recalculating centroid for cluster of " + str(len(self.entries)) + " entries"
 		centroidVals = self.centroid.getValues()
 		self.categoricalAttrCounts = {}
-		util.updateProgress(0)
 		for key in centroidVals:
 			if util.isNumber(centroidVals[key]):
 				numSum = 0
@@ -198,6 +196,7 @@ def mergeClusters(cluster1, cluster2):
 					else:
 						continue
 				newCentroid[key] = maxVal
+	maxICD = False
 	if ENV.USE_INTRA_CLUSTER_SHORTCUT != True:
 		# DEAL WITH INTRACLUSTER DISTANCES
 		c1icd = cluster1.getMaxIntraClusterDistance()

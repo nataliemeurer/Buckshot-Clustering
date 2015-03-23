@@ -105,12 +105,8 @@ class BuckshotClusters:
 
 			# Add to our results store for result output later
 			resultsStore.append(data)
-		interDists = []
-		for cluster in clusters:
-			if cluster == clusters[0]:
-				continue
-			else:
-				interDists.append(clusters[0].singleLinkDist(cluster))
+		
+		interDists = self.getInterClusterDistances(clusters)
 
 		# Print and display results
 		print "\nRESULTS:"
@@ -121,6 +117,16 @@ class BuckshotClusters:
 		print "\n\nOverall:"
 		print tabulate.tabulate(avgResults, headers2, tablefmt="simple")
 		
+
+	def getInterClusterDistances(self, clusters):
+		interDists = []
+		for idx, cluster in enumerate(clusters):
+			for idx2, cluster2 in enumerate(clusters):
+				if idx <= idx2:
+					continue
+				else:
+					interDists.append(cluster.singleLinkDist(cluster2))
+		return interDists
 
 	def assignEntryToNearestCluster(self, entry, clusters):
 		minCluster = [clusters[0], entry.euclidianDist(clusters[0].getCentroid())]
