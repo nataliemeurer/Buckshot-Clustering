@@ -79,7 +79,7 @@ class BuckshotClusters:
 			
 			# Intra cluster distance calculation
 			print "Calculating Max Intra Cluster Distance"
-			micd = cluster.maxIntraClusterDistance()
+			micd = cluster.getMaxIntraClusterDistance()
 			data.append(micd)
 			intraDists.append(micd)
 			print "\nMax intra-cluster distance: " + str(micd)

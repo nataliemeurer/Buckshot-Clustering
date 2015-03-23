@@ -4,9 +4,23 @@ import numpy as np
 
 class Cluster:
 	# Constructor: takes an entry as the centroid
-	def __init__(self, centroid, values, catCounts={}):
+	def __init__(self, centroid, values, catCounts={}, icd=False):
 		self.centroid = centroid
 		self.entries = values
+		self.maxIntraClusterDistance = None # track intra cluster distance as we go to save time down the road
+		if icd == False:
+			for idx, entry in enumerate(self.entries):
+				util.updateProgress(float(idx)/float(len(self.entries)))
+				# don't compare entry to itself or entries that have already been compared
+				for idx2, entry2 in enumerate(self.entries):
+					if idx2 <= idx:
+						continue
+					else:
+						distance = entry.euclidianDist(entry2)
+						if self.maxIntraClusterDistance == None or distance > self.maxIntraClusterDistance:
+							self.maxIntraClusterDistance = distance
+		else:
+			self.maxIntraClusterDistance = icd
 		self.categoricalAttrCounts = catCounts
 		if util.dictIsEmpty(self.categoricalAttrCounts):
 			centroidVals = centroid.getValues()
@@ -37,27 +51,9 @@ class Cluster:
 	def getCatCounts(self):
 		return self.categoricalAttrCounts
 
-	# compute the SSE of our cluster
-	def sumOfSquaresError(self):
+	def sumAndIntraDist(self):
 		# declare a var to store our sum
 		sumOfSquares = 0.0
-		# for each entry
-		util.updateProgress(0)
-		for idx, entry in enumerate(self.entries):
-			util.updateProgress(float(idx)/float(len(self.entries)))
-			# don't compare entry to itself or entries that have already been compared
-			for idx2, entry2 in enumerate(self.entries):
-				if idx2 <= idx:
-					continue
-				else:
-					distance = entry.euclidianDist(entry2)
-					sumOfSquares += np.power(distance, 2)
-		util.updateProgress(1)
-		return sumOfSquares
-
-	# compute the maximum intracluster distance
-	def maxIntraClusterDistance(self):
-		# declare a max distance of zero
 		maxDistance = 0.0
 		# for each entry
 		util.updateProgress(0)
@@ -69,10 +65,28 @@ class Cluster:
 					continue
 				else:
 					distance = entry.euclidianDist(entry2)
+					sumOfSquares += np.power(distance, 2)
 					if distance > maxDistance:
 						maxDistance = distance
 		util.updateProgress(1)
-		return maxDistance
+		return [sumOfSquares, maxDistance]
+
+	# compute the SSE of our cluster
+	def sumOfSquaresError(self):
+		# declare a var to store our sum
+		sumOfSquares = 0.0
+		# for each entry
+		util.updateProgress(0)
+		for idx, entry in enumerate(self.entries):
+			util.updateProgress(float(idx)/float(len(self.entries)))
+			distance = entry.euclidianDist(self.centroid)
+			sumOfSquares += np.power(distance, 2)
+		util.updateProgress(1)
+		return sumOfSquares
+
+	# compute the maximum intracluster distance
+	def getMaxIntraClusterDistance(self):
+		return self.maxIntraClusterDistance
 
 	def centroidDist(self, cluster2):
 		return self.centroid.euclidianDist(cluster2.getCentroid())
@@ -140,33 +154,37 @@ class Cluster:
 					self.categoricalAttrCounts[attrKey] += 1
 				else:
 					self.categoricalAttrCounts[attrKey] = 1
+		for oldEntry in self.entries:
+			dist = entry.euclidianDist(oldEntry)
+			if dist > self.maxIntraClusterDistance or self.maxIntraClusterDistance == None:
+				self.maxIntraClusterDistance = dist
 		self.entries.append(entry)
 
-	# Add an entry to the cluster
-	def addEntryAndUpdateCentroid(self, entry):
-		entryVals = entry.getValues() 		# get the values we're adding
-		centroidVals = centroid.getValues()	# get the values of our centroid
-		# for each key, we update the centroid
-		for key in entryVals:
-			if key in centroidVals:
-				# take the average of added numbers
-				if util.isNumber(centroidVals[key]): 	# CONTINUOUS VARIABLES
-					oldMean = centroidVals[key]
-					newMean = (oldMean * float(len(self.points)) + float(entryVals[key])) / (float(len(self.points)) + 1.0)
-					centroid.updateValue(key, newMean)
-				else:									# CATEGORICAL VARIABLES
-					attrKey = str(key) + " " + str(entryVals[key])
-					if attrKey in self.categoricalAttrCounts:
-						self.categoricalAttrCounts[attrKey] += 1
-					else:
-						self.categoricalAttrCounts[attrKey] = 1
-					# check to see if we have a new mode.  if we do, update it in our centroid
-					if self.categoricalAttrCounts[attrKey] > self.categoricalAttrCounts[key + " " + centroidVals[key]]:
-						centroid.updateValue(key, entryVals[key])
-			else:
-				return None
-		# Add the value to our entries list
-		self.entries.append(entry)
+	# # Add an entry to the cluster
+	# def addEntryAndUpdateCentroid(self, entry):
+	# 	entryVals = entry.getValues() 		# get the values we're adding
+	# 	centroidVals = centroid.getValues()	# get the values of our centroid
+	# 	# for each key, we update the centroid
+	# 	for key in entryVals:
+	# 		if key in centroidVals:
+	# 			# take the average of added numbers
+	# 			if util.isNumber(centroidVals[key]): 	# CONTINUOUS VARIABLES
+	# 				oldMean = centroidVals[key]
+	# 				newMean = (oldMean * float(len(self.points)) + float(entryVals[key])) / (float(len(self.points)) + 1.0)
+	# 				centroid.updateValue(key, newMean)
+	# 			else:									# CATEGORICAL VARIABLES
+	# 				attrKey = str(key) + " " + str(entryVals[key])
+	# 				if attrKey in self.categoricalAttrCounts:
+	# 					self.categoricalAttrCounts[attrKey] += 1
+	# 				else:
+	# 					self.categoricalAttrCounts[attrKey] = 1
+	# 				# check to see if we have a new mode.  if we do, update it in our centroid
+	# 				if self.categoricalAttrCounts[attrKey] > self.categoricalAttrCounts[key + " " + centroidVals[key]]:
+	# 					centroid.updateValue(key, entryVals[key])
+	# 		else:
+	# 			return None
+	# 	# Add the value to our entries list
+	# 	self.entries.append(entry)
 
 
 # merges two clusters and returns the result of the merge. Does not delete or alter either cluster
@@ -201,5 +219,19 @@ def mergeClusters(cluster1, cluster2):
 					else:
 						continue
 				newCentroid[key] = maxVal
-	newCluster = Cluster(e.Entry(newCentroid), cluster1.getEntries() + cluster2.getEntries(), newCatCounts)
+	# DEAL WITH INTRACLUSTER DISTANCES
+	c1icd = cluster1.getMaxIntraClusterDistance()
+	c2icd = cluster2.getMaxIntraClusterDistance()
+	maxICD = None
+	if c1icd > c2icd:
+		maxICD = c1icd
+	else:
+		maxICD = c2icd
+	for idx, entry in enumerate(cluster1.getEntries()):
+		# don't compare entry to itself or entries that have already been compared
+		for idx2, entry2 in enumerate(cluster2.getEntries()):
+			distance = entry.euclidianDist(entry2)
+			if maxICD < distance:
+				maxICD = distance
+	newCluster = Cluster(e.Entry(newCentroid), cluster1.getEntries() + cluster2.getEntries(), newCatCounts, maxICD)
 	return newCluster
