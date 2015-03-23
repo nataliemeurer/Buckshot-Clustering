@@ -120,12 +120,17 @@ class BuckshotClusters:
 
 	def getInterClusterDistances(self, clusters):
 		interDists = []
+		print "\nCalculating Inter-Cluster Distances"
+		util.updateProgress(0)
 		for idx, cluster in enumerate(clusters):
+			util.updateProgress(float(idx) / float(len(clusters)))
 			for idx2, cluster2 in enumerate(clusters):
-				if idx <= idx2:
+				# don't repeat indexes
+				if idx >= idx2:
 					continue
 				else:
-					interDists.append(cluster.singleLinkDist(cluster2))
+					interDists.append(cluster.centroidDist(cluster2))
+		util.updateProgress(1)
 		return interDists
 
 	def assignEntryToNearestCluster(self, entry, clusters):

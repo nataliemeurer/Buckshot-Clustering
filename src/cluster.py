@@ -61,7 +61,6 @@ class Cluster:
 		else:
 			# declare a var to store our sum
 			maxDist = 0.0
-			print "Calculating max intra cluster distance:"
 			util.updateProgress(0)
 			# For each entry, we find the distance to the centroid and add it to our sum of squares
 			for idx, entry in enumerate(self.entries):
@@ -93,13 +92,15 @@ class Cluster:
 	def singleLinkDist(self, cluster2):
 		minDist = None
 		for idx, entry in enumerate(self.entries):
-			# don't compare entry to itself or entries that have already been compared
 			for idx2, entry2 in enumerate(cluster2.getEntries()):
-				distance = entry.euclidianDist(entry2)
-				if minDist == None:
-					minDist = distance
-				elif distance < minDist:
-					minDist = distance
+				if idx >= idx2:
+					continue
+				else:
+					distance = entry.euclidianDist(entry2)
+					if minDist == None:
+						minDist = distance
+					elif distance < minDist:
+						minDist = distance
 		return minDist
 
 	# returns the maximum distance between entries in 2 clusters
@@ -108,11 +109,14 @@ class Cluster:
 		for idx, entry in enumerate(self.entries):
 			# don't compare entry to itself or entries that have already been compared
 			for idx2, entry2 in enumerate(cluster2.getEntries()):
-				distance = entry.euclidianDist(entry2)
-				if maxDist == None:
-					maxDist = distance
-				elif distance > maxDist:
-					maxDist = distance
+				if idx >= idx2:
+					continue
+				else:
+					distance = entry.euclidianDist(entry2)
+					if maxDist == None:
+						maxDist = distance
+					elif distance > maxDist:
+						maxDist = distance
 		return maxDist
 
 	# Recalculates centroid (used if you have added values but not changed the centroid)
