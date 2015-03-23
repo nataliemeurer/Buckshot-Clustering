@@ -91,32 +91,27 @@ class Cluster:
 	# returns the minimum distance between entries in 2 clusters
 	def singleLinkDist(self, cluster2):
 		minDist = None
+		# compare each entry in the first cluster to each in the second
 		for idx, entry in enumerate(self.entries):
 			for idx2, entry2 in enumerate(cluster2.getEntries()):
-				if idx >= idx2:
-					continue
-				else:
-					distance = entry.euclidianDist(entry2)
-					if minDist == None:
-						minDist = distance
-					elif distance < minDist:
-						minDist = distance
+				distance = entry.euclidianDist(entry2)
+				if minDist == None:
+					minDist = distance
+				elif distance < minDist:
+					minDist = distance
 		return minDist
 
 	# returns the maximum distance between entries in 2 clusters
 	def completeLinkDist(self, cluster2):
 		maxDist = None
 		for idx, entry in enumerate(self.entries):
-			# don't compare entry to itself or entries that have already been compared
+			# compare each entry in the first cluster to each in the second
 			for idx2, entry2 in enumerate(cluster2.getEntries()):
-				if idx >= idx2:
-					continue
-				else:
-					distance = entry.euclidianDist(entry2)
-					if maxDist == None:
-						maxDist = distance
-					elif distance > maxDist:
-						maxDist = distance
+				distance = entry.euclidianDist(entry2)
+				if maxDist == None:
+					maxDist = distance
+				elif distance > maxDist:
+					maxDist = distance
 		return maxDist
 
 	# Recalculates centroid (used if you have added values but not changed the centroid)

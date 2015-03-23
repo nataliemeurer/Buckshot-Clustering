@@ -34,8 +34,8 @@ class BuckshotClusters:
 				break
 			# pop the larger index first
 			if minimumDistance[1] > minimumDistance[2]:
-				clusters.pop(minimumDistance[1]).printClusterData()
-				clusters.pop(minimumDistance[2]).printClusterData()
+				clusters.pop(minimumDistance[1])
+				clusters.pop(minimumDistance[2])
 			else:
 				clusters.pop(minimumDistance[2])
 				clusters.pop(minimumDistance[1])
@@ -144,7 +144,7 @@ class BuckshotClusters:
 
 	# Creates a similarity matrix.  Tracks the minimum and maximum values in the matrix. Returns in format[matrix, [minValue, idx1, idx2], [maxValue, idx1, idx2]]
 	def createSimilarityMatrix(self, clusters):
-		print "Constructing Similarity Matrix for " + str(len(clusters)) + " clusters using the " + ENV.MERGING_CRITERIA + " merging criteria."
+		# print "Constructing Similarity Matrix for " + str(len(clusters)) + " clusters using the " + ENV.MERGING_CRITERIA + " merging criteria."
 		# Create a matrix full of None values of size equal to the length of clusters
 		matrix = []
 		count1 = 0
@@ -158,10 +158,10 @@ class BuckshotClusters:
 				matrix[count1].append(None)
 				count2 += 1
 			count1 += 1
-		util.updateProgress(0)
+		# util.updateProgress(0)
 		# for every single row
 		for rowIdx, row in enumerate(matrix):
-			util.updateProgress(float(rowIdx) / float(len(matrix)))
+			# util.updateProgress(float(rowIdx) / float(len(matrix)))
 			# for each column
 			for colIdx, col in enumerate(matrix):
 				# we leave the value as None if 
@@ -187,8 +187,8 @@ class BuckshotClusters:
 						maxSimilarity[1] = rowIdx
 						maxSimilarity[2] = colIdx
 					matrix[rowIdx][colIdx] = distance
-		util.updateProgress(1)
-		print "\nMatrix construction complete.\n"
+		# util.updateProgress(1)
+		# print "\nMatrix construction complete.\n"
 		return [matrix, minSimilarity, maxSimilarity]
 
 		
