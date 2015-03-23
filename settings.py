@@ -23,7 +23,7 @@ REMOVED_ATTRS = ["fnlwgt:", "education-num:"]	# LIST(strings): name of the attri
 
 # CLUSTERING SETTINGS
 USE_RANDOM_SAMPLE = False 						# BOOLEAN: Determines whether the algorithm will sample the whole data set or a fixed size
-SAMPLE_SIZE = 20000 							# INT: Sets the sample size that the algorithm will cluster, which is randomly sampled without replacement
+SAMPLE_SIZE = 1000 								# INT: Sets the sample size that the algorithm will cluster, which is randomly sampled without replacement
 SAMPLE_WITH_REPLACEMENT = False 				# BOOLEAN: If true, samples data with replacement.  Otherwise, does not replace
 K = 3											# INT: number of clusters desired
 DISTANCE_MEASURE = "euclidian"					# STRING: formula used to measure distance, currently only supports euclidian

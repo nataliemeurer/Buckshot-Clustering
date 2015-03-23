@@ -47,7 +47,7 @@ def mergeDicts(dict1, dict2):
 class continuousBin:
 	def __init__(self, attrName):
 		self.values = []			# a sorted list of values of continuous variables
-		self.attrName = attrName
+		self.attrName = attrName    # 
 		self.mean = None
 		self.classMean = {}
 		self.max = None
