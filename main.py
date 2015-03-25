@@ -9,10 +9,6 @@ import cluster as c
 import buckshot as buck
 import datetime
 
-kValues = [1, 3, 5, 8, 10, 15, 25, 50, 100] * 3
-mergingCriterias = ["single-link"]*9 + ["complete-link"]*9 + ["centroid"]*9
-iterCount = 0
-
 # FILE READING
 data = arff.readArff(ENV.DATA_SRC)			# read our file and store the data
 
@@ -29,33 +25,27 @@ if ENV.REMOVE_OUTLIERS == True:
 			fullData.removeAttrOutliers(attrName)	# remove specific outliers
 fullData.normalizeContinuousVariables()				# Normalize all continuous variables using the method specified in settings
 
-while iterCount < (len(mergingCriterias) - 1):
-	ENV.K = kValues[iterCount]
-	ENV.MERGING_CRITERIA = mergingCriterias[iterCount]
+entries = fullData.getDataAsEntries()				# convert all data points to the structure of an entry, a class I defined
 
-	
-	entries = fullData.getDataAsEntries()				# convert all data points to the structure of an entry, a class I defined
+# CLUSTERING
+startTime = None
+clusterDriver = buck.BuckshotClusters()		# create a cluster driver to do our clustering
+if ENV.USE_RANDOM_SAMPLE == True:			# select a random sample to use for the cluster
+	sample = []
+	count = 0
+	while count < ENV.SAMPLE_SIZE:
+		if ENV.SAMPLE_WITH_REPLACEMENT == True:
+			sample.append(util.chooseOneWithReplacement(entries))
+		else:
+			sample.append(util.chooseOneWithoutReplacement(entries))
+		count += 1
+	startTime = datetime.datetime.now()
+	clusterDriver.clusterEntries(sample)
+else:
+	startTime = datetime.datetime.now()
+	clusterDriver.clusterEntries(entries)		# pass our data into the cluster to be buckshot clustered	
 
-	# CLUSTERING
-	startTime = None
-	clusterDriver = buck.BuckshotClusters()		# create a cluster driver to do our clustering
-	if ENV.USE_RANDOM_SAMPLE == True:			# select a random sample to use for the cluster
-		sample = []
-		count = 0
-		while count < ENV.SAMPLE_SIZE:
-			if ENV.SAMPLE_WITH_REPLACEMENT == True:
-				sample.append(util.chooseOneWithReplacement(entries))
-			else:
-				sample.append(util.chooseOneWithoutReplacement(entries))
-			count += 1
-		startTime = datetime.datetime.now()
-		clusterDriver.clusterEntries(sample)
-	else:
-		startTime = datetime.datetime.now()
-		clusterDriver.clusterEntries(entries)		# pass our data into the cluster to be buckshot clustered	
-
-	endTime = datetime.datetime.now()
-	timeSpent = endTime - startTime
-	print "PROGRAM COMPLETED IN " + str(timeSpent.seconds) + " SECONDS"
-	iterCount += 1
+endTime = datetime.datetime.now()
+timeSpent = endTime - startTime
+print "PROGRAM COMPLETED IN " + str(timeSpent.seconds) + " SECONDS"
 

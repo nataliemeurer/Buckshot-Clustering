@@ -125,7 +125,7 @@ class BuckshotClusters:
 		for idx, cluster in enumerate(clusters):
 			util.updateProgress(float(idx) / float(len(clusters)))
 			for idx2, cluster2 in enumerate(clusters):
-				# don't repeat indexes
+				# don't repeat indexes because we have visited them before
 				if idx >= idx2:
 					continue
 				else:
@@ -144,7 +144,7 @@ class BuckshotClusters:
 
 	# Creates a similarity matrix.  Tracks the minimum and maximum values in the matrix. Returns in format[matrix, [minValue, idx1, idx2], [maxValue, idx1, idx2]]
 	def createSimilarityMatrix(self, clusters):
-		# print "Constructing Similarity Matrix for " + str(len(clusters)) + " clusters using the " + ENV.MERGING_CRITERIA + " merging criteria."
+		print "Constructing Similarity Matrix for " + str(len(clusters)) + " clusters using the " + ENV.MERGING_CRITERIA + " merging criteria."
 		# Create a matrix full of None values of size equal to the length of clusters
 		matrix = []
 		count1 = 0
