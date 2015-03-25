@@ -5,11 +5,8 @@ import utils as util
 import settings as ENV
 import tabulate
 
-# Main clustering class
+# Main clustering class driver.
 class BuckshotClusters:
-	# Constructor
-	def __init__(self):
-		self.resultsLog = []
 
 	# Main clustering function
 	def clusterEntries(self, entries):
@@ -25,7 +22,7 @@ class BuckshotClusters:
 		# STEP 2: Merge our clusters based on a similarity matrix until we have K clusters
 		while len(clusters) > ENV.K:
 			# calculate a comparison matrix
-			matrixInfo = self.createSimilarityMatrix(clusters)
+			matrixInfo = self.createSimilarityMatrix(clusters)	# matrix info in format: [matrix, [minDist, minRowIdx, minColIdx], [maxDist, maxRowIdx, maxColIdx]]
 			minimumDistance = matrixInfo[1]
 			# Regardless of our method, we care most about our minimum distance clusters.  We merge those using the indices provided by the similarity matrix function
 			if minimumDistance[0] < ENV.MAX_SIMILARITY_THRESHOLD:
@@ -43,10 +40,11 @@ class BuckshotClusters:
 			clusters.append(newCluster)
 		
 		# STEP 3: We now have our K clusters.  Now, we can assign the remaining entries to them and we're done
-		count = 0
+		count = 0	# used for printing purposes
 		print "Assigning remaining values to nearest cluster"
 		if ENV.PROGRESS_BAR == True:
 			util.updateProgress(0)
+		# assign each remaining entry
 		for idx, entry in enumerate(entries):
 			if ENV.PROGRESS_BAR == True:
 				util.updateProgress(float(idx) / float(len(entries)))
@@ -65,7 +63,7 @@ class BuckshotClusters:
 		resultsStore = []	# stores basic results
 		intraDists = []     # stores intra cluster distances for averaging
 		sseValues = []      # stores sum of squares errors for averaging
-		classAccVals = []   # stores class accuracy vals for averaging
+		classCovVals = []   # stores class accuracy vals for averaging
 		clusterSizes = []
 		# Do the calculations for each cluster
 		for idx, cluster in enumerate(clusters):
@@ -92,13 +90,13 @@ class BuckshotClusters:
 			print "\nSum of Squares Error: " + str(sse)
 			
 			# Class Label Evaluation
-			print "Calculating Class Label Evaluation (percent purity)"
+			print "Calculating Cluster Class Coverage"
 			catCounts = cluster.getCatCounts()
 			numOfClass = float(catCounts[ENV.CLASSIFIER_NAME + " " + cluster.getCentroid().getValues()[ENV.CLASSIFIER_NAME]])
-			classAcc = (numOfClass / float(cluster.getSize())) * 100
-			classAccVals.append(classAcc)
-			data.append(classAcc)
-			print "Class Label Percentage: " + str(classAcc) + "%"
+			classCov = (numOfClass / float(cluster.getSize())) * 100
+			classCovVals.append(classCov)
+			data.append(classCov)
+			print "Class Label Percentage: " + str(classCov) + "%"
 
 			# Add cluster size
 			clusterSizes.append(cluster.getSize())
@@ -106,6 +104,7 @@ class BuckshotClusters:
 			# Add to our results store for result output later
 			resultsStore.append(data)
 		
+		# get interDist data
 		interDists = self.getInterClusterDistances(clusters)
 
 		# Print and display results
@@ -113,11 +112,11 @@ class BuckshotClusters:
 		# Print a table of our results
 		print tabulate.tabulate(resultsStore, headers, tablefmt="simple")
 		# Print averaged results
-		avgResults = [[ENV.SAMPLE_SIZE, ENV.K, ENV.MERGING_CRITERIA, np.mean(intraDists), np.mean(interDists), np.mean(sseValues), np.max(clusterSizes), np.min(clusterSizes), np.mean(clusterSizes), np.mean(classAccVals)]]
+		avgResults = [[ENV.SAMPLE_SIZE, ENV.K, ENV.MERGING_CRITERIA, np.mean(intraDists), np.mean(interDists), np.mean(sseValues), np.max(clusterSizes), np.min(clusterSizes), np.mean(clusterSizes), np.mean(classCovVals)]]
 		print "\n\nOverall:"
 		print tabulate.tabulate(avgResults, headers2, tablefmt="simple")
 		
-
+	# calculate all inter-clustar distances and return them as a list
 	def getInterClusterDistances(self, clusters):
 		interDists = []
 		print "\nCalculating Inter-Cluster Distances"
@@ -133,6 +132,7 @@ class BuckshotClusters:
 		util.updateProgress(1)
 		return interDists
 
+	# given an entry and a list of clusters, assigns the entry to the cluster with the nearest centroid
 	def assignEntryToNearestCluster(self, entry, clusters):
 		minCluster = [clusters[0], entry.euclidianDist(clusters[0].getCentroid())]
 		for cluster in clusters:
@@ -158,10 +158,12 @@ class BuckshotClusters:
 				matrix[count1].append(None)
 				count2 += 1
 			count1 += 1
-		# util.updateProgress(0)
+		if ENV.PROGRESS_BAR == True:
+			util.updateProgress(0)
 		# for every single row
 		for rowIdx, row in enumerate(matrix):
-			# util.updateProgress(float(rowIdx) / float(len(matrix)))
+			if ENV.PROGRESS_BAR == True:
+				util.updateProgress(float(rowIdx) / float(len(matrix)))
 			# for each column
 			for colIdx, col in enumerate(matrix):
 				# we leave the value as None if 
@@ -169,12 +171,14 @@ class BuckshotClusters:
 					continue
 				else:
 					distance = None
+					# use different distance measures depending upon what method is selected
 					if ENV.MERGING_CRITERIA == "single-link":
 						distance = clusters[rowIdx].singleLinkDist(clusters[colIdx])
 					elif ENV.MERGING_CRITERIA == "complete-link":
 						distance = clusters[rowIdx].completeLinkDist(clusters[colIdx])
 					elif ENV.MERGING_CRITERIA == "centroid":
 						distance = clusters[rowIdx].centroidDist(clusters[colIdx])
+					# Store our min similarity distance and the row/column in which it occurs
 					if minSimilarity == None:
 						minSimilarity = [distance, rowIdx, colIdx]
 						maxSimilarity = [distance, rowIdx, colIdx]
@@ -186,9 +190,11 @@ class BuckshotClusters:
 						maxSimilarity[0] = distance
 						maxSimilarity[1] = rowIdx
 						maxSimilarity[2] = colIdx
+					# store the data in our matrix
 					matrix[rowIdx][colIdx] = distance
-		# util.updateProgress(1)
-		# print "\nMatrix construction complete.\n"
+		if ENV.PROGRESS_BAR == True:
+			util.updateProgress(1)
+		print "\nMatrix construction complete.\n"
 		return [matrix, minSimilarity, maxSimilarity]
 
 		

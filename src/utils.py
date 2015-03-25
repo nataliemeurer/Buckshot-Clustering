@@ -6,22 +6,30 @@ import math
 import random
 import settings as ENV
 
+# NORMALIZATION FUNCTIONS
+# scale using min-max
 def scaleMinMax(value, oldMin, oldMax, minimum=0, maximum=1):
 	return ((value - oldMin)/(oldMax - oldMin))*(maximum - minimum) + minimum
 
+# scale using z-score
 def scaleZScore(value, mean, stdev):
 	return (value - mean) / stdev
 
+# SAMPLING FUNCTIONS
+# choose w/out replacement and return it
 def chooseOneWithoutReplacement(list):
 	randIdx = math.floor(len(list) * random.random())
 	removedVal = list.pop(int(randIdx))
 	return removedVal
 
+# choose one w/ replacement and return it
 def chooseOneWithReplacement(list):
 	randIdx = math.floor(len(list) * random.random())
 	val = list[int(randIdx):int(randIdx) + 1]
 	return val
 
+# DICTIONARY FUNCTIONS
+# returns true if dictionary is empty, else returns false
 def dictIsEmpty(dict):
 	for key in dict:
 		return False
@@ -42,7 +50,7 @@ def mergeDicts(dict1, dict2):
 			newDict[key] = dict2[key]
 	return newDict
 
-
+# DATA MANAGEMENT
 # Class used to manage sorted sets of a continuous variable
 class continuousBin:
 	def __init__(self, attrName):
@@ -154,7 +162,7 @@ class categoricalBin:
 	def getClassMode(self, className):
 		return self.classModes[str(className)][1]
 
-
+# MISCELLANEOUS
 # Returns whether the string can be converted to a number
 def isNumber(str):
     try:

@@ -8,6 +8,15 @@ class Cluster:
 	def __init__(self, centroid, values, catCounts={}, icd=False):
 		self.centroid = centroid
 		self.entries = values
+		self.categoricalAttrCounts = catCounts
+		# assign counts to cat counts
+		if util.dictIsEmpty(self.categoricalAttrCounts):
+			centroidVals = centroid.getValues()
+			for entry in self.entries:
+				for key in centroidVals:
+					if util.isNumber(centroidVals[key]) == False:
+						self.categoricalAttrCounts[str(key) + " " + centroidVals[key]] = 1
+		# for full intracluster distance method, we keep a running track of it as we go
 		if ENV.USE_INTRA_CLUSTER_SHORTCUT == False:
 			self.maxIntraClusterDistance = None # track intra cluster distance as we go to save time down the road
 			if icd == False:
@@ -23,13 +32,6 @@ class Cluster:
 								self.maxIntraClusterDistance = distance
 			else:
 				self.maxIntraClusterDistance = icd
-		self.categoricalAttrCounts = catCounts
-		if util.dictIsEmpty(self.categoricalAttrCounts):
-			centroidVals = centroid.getValues()
-			for entry in self.entries:
-				for key in centroidVals:
-					if util.isNumber(centroidVals[key]) == False:
-						self.categoricalAttrCounts[str(key) + " " + centroidVals[key]] = 1
 	
 	# Prints data related to the currnet cluster
 	def printClusterData(self):
@@ -195,7 +197,8 @@ def mergeClusters(cluster1, cluster2):
 					else:
 						continue
 				newCentroid[key] = maxVal
-	maxICD = False
+	maxICD = False	# set this to False just in case we don't do anything with it
+	# This code is only executed if we are doing the full icd method
 	if ENV.USE_INTRA_CLUSTER_SHORTCUT != True:
 		# DEAL WITH INTRACLUSTER DISTANCES
 		c1icd = cluster1.getMaxIntraClusterDistance()
